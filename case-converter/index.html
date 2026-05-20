@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Case Converter — Convert Text to Uppercase, Lowercase &amp; More</title>
+  <meta name="description" content="Free online case converter. Instantly convert text to uppercase, lowercase, title case, camelCase, snake_case and more. No sign-up required.">
+  <link rel="canonical" href="https://softeditools.com/case-converter">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Case Converter — Convert Text to Uppercase, Lowercase &amp; More">
+  <meta property="og:description" content="Free online case converter. Instantly convert text to uppercase, lowercase, title case, camelCase, snake_case and more. No sign-up required.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://softeditools.com/case-converter">
+
+  <meta name="robots" content="index, follow">
+
+  <!-- Schema Markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Case Converter",
+    "url": "https://softeditools.com/case-converter",
+    "description": "Free online case converter. Instantly convert text to uppercase, lowercase, title case, camelCase, snake_case and more. No sign-up required.",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent:       #0d9488;
+      --accent-dark:  #0f766e;
+      --accent-light: #f0fdfa;
+      --text:         #1e293b;
+      --muted:        #64748b;
+      --bg:           #ffffff;
+      --surface:      #f8fafc;
+      --border:       #e2e8f0;
+      --radius:       8px;
+      --font:         Inter, 'Segoe UI', Arial, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 16px;
+    }
+
+    .container {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 44px 0 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: var(--text);
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 560px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ── Ad slots ── */
+    .ad-slot {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px auto;
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: 4px;
+      color: var(--muted);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .ad-leaderboard { width: 728px; max-width: 100%; height: 90px; }
+    .ad-below       { width: 728px; max-width: 100%; height: 90px; }
+
+    @media (max-width: 600px) {
+      .ad-leaderboard,
+      .ad-below { width: 320px; height: 50px; }
+    }
+
+    /* ── Tool area ── */
+    .tool-area { margin: 8px 0 0; }
+
+    #text-input {
+      width: 100%;
+      min-height: 230px;
+      padding: 16px 18px;
+      font-family: var(--font);
+      font-size: 1rem;
+      color: var(--text);
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      resize: vertical;
+      line-height: 1.7;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    #text-input:focus { border-color: var(--accent); }
+
+    #text-input::placeholder { color: #cbd5e1; }
+
+    /* ── Conversion buttons ── */
+    .convert-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .convert-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .conv-btn {
+      padding: 10px 8px;
+      background: var(--accent-light);
+      color: var(--accent-dark);
+      border: 1px solid #99f6e4;
+      border-radius: 6px;
+      font-family: var(--font);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .conv-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+
+    .conv-btn:active {
+      background: var(--accent-dark);
+      border-color: var(--accent-dark);
+    }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    #clear-btn {
+      padding: 8px 22px;
+      background: var(--bg);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: var(--font);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+
+    #clear-btn:hover {
+      background: #fef2f2;
+      border-color: #fca5a5;
+      color: #dc2626;
+    }
+
+    #copy-btn {
+      padding: 8px 22px;
+      background: var(--accent);
+      color: #ffffff;
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      font-family: var(--font);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    #copy-btn:hover {
+      background: var(--accent-dark);
+      border-color: var(--accent-dark);
+    }
+
+    #copy-btn.copied {
+      background: #16a34a;
+      border-color: #16a34a;
+    }
+
+    /* ── Stats grid ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 560px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 14px 18px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2.1rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
+
+    /* ── Content sections ── */
+    .content-section {
+      margin-top: 52px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .content-section h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      letter-spacing: -0.01em;
+    }
+
+    .content-section p {
+      color: var(--muted);
+      font-size: 0.96rem;
+      margin-bottom: 12px;
+    }
+
+    .content-section p:last-child { margin-bottom: 0; }
+
+    /* ── FAQ ── */
+    .faq-list { margin-top: 4px; }
+
+    .faq-item { margin-bottom: 26px; }
+
+    .faq-item:last-child { margin-bottom: 0; }
+
+    .faq-item h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .faq-item p {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: 56px;
+      padding: 24px 0 32px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    /* ── Mobile tweaks ── */
+    @media (max-width: 480px) {
+      h1 { font-size: 1.75rem; }
+      .stat-value { font-size: 1.65rem; }
+      header { padding: 28px 0 16px; }
+    }
+  </style>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6940565595128907" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>Case Converter</h1>
+    <p class="subtitle">
+      The fastest free case converter to convert text online — paste any text and instantly
+      switch between uppercase, lowercase, title case, camelCase, snake_case, and more.
+    </p>
+  </header>
+
+  <!-- AdSense slot 1 -->
+  <div class="ad-slot ad-leaderboard"><!-- AdSense slot 1 --></div>
+
+  <main>
+    <div class="tool-area">
+
+      <textarea
+        id="text-input"
+        placeholder="Type or paste your text here, then click a conversion button below…"
+        aria-label="Text input for case conversion"
+        spellcheck="false"
+      ></textarea>
+
+      <div class="convert-grid" role="group" aria-label="Case conversion options">
+        <button class="conv-btn" data-case="upper"    aria-label="Convert to UPPERCASE">UPPERCASE</button>
+        <button class="conv-btn" data-case="lower"    aria-label="Convert to lowercase">lowercase</button>
+        <button class="conv-btn" data-case="title"    aria-label="Convert to Title Case">Title Case</button>
+        <button class="conv-btn" data-case="sentence" aria-label="Convert to Sentence case">Sentence case</button>
+        <button class="conv-btn" data-case="camel"    aria-label="Convert to camelCase">camelCase</button>
+        <button class="conv-btn" data-case="pascal"   aria-label="Convert to PascalCase">PascalCase</button>
+        <button class="conv-btn" data-case="snake"    aria-label="Convert to snake_case">snake_case</button>
+        <button class="conv-btn" data-case="kebab"    aria-label="Convert to kebab-case">kebab-case</button>
+      </div>
+
+      <div class="toolbar">
+        <button id="clear-btn" aria-label="Clear all text">Clear</button>
+        <button id="copy-btn"  aria-label="Copy text to clipboard">Copy</button>
+      </div>
+
+      <div class="stats-grid" role="region" aria-label="Text statistics">
+        <div class="stat-card">
+          <div class="stat-value" id="char-count">0</div>
+          <div class="stat-label">Characters</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="word-count">0</div>
+          <div class="stat-label">Words</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="char-no-space">0</div>
+          <div class="stat-label">No Spaces</div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- AdSense slot 2 -->
+  <div class="ad-slot ad-below"><!-- AdSense slot 2 --></div>
+
+  <section class="content-section" aria-labelledby="how-heading">
+    <h2 id="how-heading">How to use this case converter</h2>
+    <p>
+      Type or paste your text into the box above, then click any conversion button to instantly
+      reformat it. The result replaces the text in the box so you can keep converting or copy
+      it straight away — no page refresh needed.
+    </p>
+    <p>
+      Use the <strong>Copy</strong> button to send the converted text to your clipboard in one
+      click. To start over, hit <strong>Clear</strong>. The character and word counts at the
+      bottom always reflect the current text.
+    </p>
+    <p>
+      Everything runs entirely inside your browser. Your text is never sent to any server,
+      so your content stays completely private. This free case converter works in every modern
+      browser on both desktop and mobile devices.
+    </p>
+  </section>
+
+  <section class="content-section" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <h3>What is a case converter?</h3>
+        <p>
+          A case converter is a tool that changes the capitalisation of text. Instead of
+          retyping or manually editing every letter, you paste your text and click a button
+          to switch between formats like uppercase, lowercase, title case, or programming
+          conventions like camelCase and snake_case in an instant.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What is title case?</h3>
+        <p>
+          Title case capitalises the first letter of each word. It is commonly used in
+          headings, article titles, book names, and blog post titles. For example,
+          "the quick brown fox" becomes "The Quick Brown Fox" in title case.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What is camelCase used for?</h3>
+        <p>
+          camelCase joins words together with no spaces, capitalising every word except the
+          first. It is widely used in JavaScript, Java, and many other programming languages
+          for naming variables, functions, and object properties — for example,
+          <code>myVariableName</code> or <code>getUserData</code>.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What is snake_case used for?</h3>
+        <p>
+          snake_case replaces spaces with underscores and uses all lowercase letters. It is the
+          standard naming convention in Python for variables and functions, and is also common
+          in database column names and file names — for example, <code>user_first_name</code>
+          or <code>get_user_data</code>.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What is the difference between uppercase and lowercase?</h3>
+        <p>
+          Uppercase (also called capital letters) refers to the large form of each letter —
+          A, B, C. Lowercase refers to the small form — a, b, c. The terms come from the
+          physical type cases used by early printers, where capital letters were stored in the
+          upper case tray and small letters in the lower case tray.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Is this case converter free?</h3>
+        <p>
+          Yes, completely free. There is no sign-up, no account, and no usage limit. You can
+          convert text online as many times as you like at no cost, forever.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; <span id="year"></span> softeditools.com — Free online case converter</p>
+  </footer>
+
+</div><!-- /container -->
+
+<script>
+  const input       = document.getElementById('text-input');
+  const clearBtn    = document.getElementById('clear-btn');
+  const copyBtn     = document.getElementById('copy-btn');
+  const charCountEl = document.getElementById('char-count');
+  const wordCountEl = document.getElementById('word-count');
+  const charNoSpEl  = document.getElementById('char-no-space');
+
+  function toTitleCase(str) {
+    return str.replace(/\S+/g, function (word) {
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    });
+  }
+
+  function toSentenceCase(str) {
+    return str
+      .toLowerCase()
+      .replace(/(^\s*\w|[.!?]\s+\w)/g, function (match) {
+        return match.toUpperCase();
+      });
+  }
+
+  function toCamelCase(str) {
+    return str
+      .trim()
+      .replace(/[^a-zA-Z0-9]+(.)/g, function (_, char) {
+        return char.toUpperCase();
+      })
+      .replace(/^[A-Z]/, function (c) { return c.toLowerCase(); });
+  }
+
+  function toPascalCase(str) {
+    var camel = toCamelCase(str);
+    return camel.charAt(0).toUpperCase() + camel.slice(1);
+  }
+
+  function toSnakeCase(str) {
+    return str
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '_')
+      .replace(/^_|_$/g, '');
+  }
+
+  function toKebabCase(str) {
+    return str
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
+  function applyCase(type) {
+    var text = input.value;
+    switch (type) {
+      case 'upper':    input.value = text.toUpperCase(); break;
+      case 'lower':    input.value = text.toLowerCase(); break;
+      case 'title':    input.value = toTitleCase(text);   break;
+      case 'sentence': input.value = toSentenceCase(text); break;
+      case 'camel':    input.value = toCamelCase(text);   break;
+      case 'pascal':   input.value = toPascalCase(text);  break;
+      case 'snake':    input.value = toSnakeCase(text);   break;
+      case 'kebab':    input.value = toKebabCase(text);   break;
+    }
+    updateStats();
+  }
+
+  function updateStats() {
+    var text = input.value;
+    charCountEl.textContent = text.length.toLocaleString();
+    charNoSpEl.textContent  = text.replace(/\s/g, '').length.toLocaleString();
+    var trimmed = text.trim();
+    wordCountEl.textContent = trimmed ? trimmed.split(/\s+/).filter(Boolean).length.toLocaleString() : '0';
+  }
+
+  document.querySelectorAll('.conv-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      applyCase(btn.getAttribute('data-case'));
+    });
+  });
+
+  input.addEventListener('input', updateStats);
+
+  clearBtn.addEventListener('click', function () {
+    input.value = '';
+    updateStats();
+    input.focus();
+  });
+
+  copyBtn.addEventListener('click', function () {
+    if (!input.value) return;
+    navigator.clipboard.writeText(input.value).then(function () {
+      copyBtn.textContent = 'Copied!';
+      copyBtn.classList.add('copied');
+      setTimeout(function () {
+        copyBtn.textContent = 'Copy';
+        copyBtn.classList.remove('copied');
+      }, 1800);
+    }).catch(function () {
+      input.select();
+      document.execCommand('copy');
+    });
+  });
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  updateStats();
+</script>
+
+</body>
+</html>
