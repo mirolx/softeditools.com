@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scientific Calculator — Free Online Scientific Calculator</title>
+  <meta name="description" content="Free online scientific calculator with trigonometry, logarithms, exponents, and memory functions. Perfect for students and engineers. No sign-up required.">
+  <link rel="canonical" href="https://softeditools.com/scientific-calculator">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Scientific Calculator — Free Online Scientific Calculator">
+  <meta property="og:description" content="Free online scientific calculator with trigonometry, logarithms, exponents, and memory functions. Perfect for students and engineers. No sign-up required.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://softeditools.com/scientific-calculator">
+
+  <meta name="robots" content="index, follow">
+
+  <!-- Schema Markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Scientific Calculator",
+    "url": "https://softeditools.com/scientific-calculator",
+    "description": "Free online scientific calculator with trigonometry, logarithms, exponents, and memory functions. Perfect for students and engineers. No sign-up required.",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent:       #0d9488;
+      --accent-dark:  #0f766e;
+      --accent-light: #f0fdfa;
+      --text:         #1e293b;
+      --muted:        #64748b;
+      --bg:           #ffffff;
+      --surface:      #f8fafc;
+      --border:       #e2e8f0;
+      --radius:       8px;
+      --font:         Inter, 'Segoe UI', Arial, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 16px;
+    }
+
+    .container {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 44px 0 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: var(--text);
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 560px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ── Ad slots ── */
+    .ad-slot {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px auto;
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: 4px;
+      color: var(--muted);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .ad-leaderboard { width: 728px; max-width: 100%; height: 90px; }
+    .ad-below       { width: 728px; max-width: 100%; height: 90px; }
+
+    @media (max-width: 600px) {
+      .ad-leaderboard,
+      .ad-below { width: 320px; height: 50px; }
+    }
+
+    /* ── Tool area ── */
+    .tool-area { margin: 8px 0 0; }
+
+    /* ── Calculator card ── */
+    .sci-card {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* ── Display ── */
+    .sci-display {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px 16px 10px;
+      margin-bottom: 14px;
+      min-height: 96px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .display-indicators {
+      display: flex;
+      align-items: center;
+      margin-bottom: 4px;
+      min-height: 18px;
+    }
+
+    .mem-indicator {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: #6d28d9;
+      background: #ede9fe;
+      border-radius: 3px;
+      padding: 1px 5px;
+      visibility: hidden;
+      user-select: none;
+    }
+
+    .mode-indicator {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--accent-dark);
+      background: var(--accent-light);
+      border: 1px solid #99f6e4;
+      border-radius: 3px;
+      padding: 1px 6px;
+      user-select: none;
+      margin-left: auto;
+    }
+
+    .sci-history {
+      font-size: 0.78rem;
+      color: var(--muted);
+      min-height: 16px;
+      margin-bottom: 3px;
+      font-family: 'Courier New', Courier, monospace;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    .sci-main {
+      font-size: 2.3rem;
+      font-weight: 600;
+      color: var(--text);
+      font-family: 'Courier New', Courier, monospace;
+      line-height: 1.1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      letter-spacing: -0.02em;
+      text-align: right;
+    }
+
+    /* ── Button shared ── */
+    .calc-btn {
+      border-radius: 5px;
+      border: 1px solid var(--border);
+      font-family: var(--font);
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.1s, box-shadow 0.1s, border-color 0.1s, transform 0.07s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      line-height: 1;
+    }
+
+    .calc-btn:active {
+      transform: scale(0.91);
+    }
+
+    /* ── Scientific grid ── */
+    .sci-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 5px;
+      margin-bottom: 5px;
+    }
+
+    .sci-grid .calc-btn {
+      height: 42px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    /* ── Divider ── */
+    .grid-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 8px 0;
+    }
+
+    /* ── Numpad grid ── */
+    .num-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .num-grid .calc-btn {
+      height: 52px;
+      font-size: 1rem;
+    }
+
+    /* ── Button colour variants ── */
+
+    /* Memory */
+    .btn-mem {
+      background: #eef2ff;
+      color: #4338ca;
+      border-color: #c7d2fe;
+    }
+    .btn-mem:hover { background: #e0e7ff; }
+
+    /* DEG/RAD mode toggle */
+    .btn-mode {
+      background: var(--accent-light);
+      color: var(--accent-dark);
+      border-color: #99f6e4;
+      font-weight: 700;
+    }
+    .btn-mode:hover { background: #ccfbf1; }
+
+    /* Scientific functions */
+    .btn-sci {
+      background: #f1f5f9;
+      color: #334155;
+      border-color: #dde3ec;
+    }
+    .btn-sci:hover { background: #e2e8f0; }
+
+    /* Utility: EXP, parens, C, ⌫ */
+    .btn-util {
+      background: #e8edf2;
+      color: #475569;
+      border-color: #d4dae2;
+      font-weight: 600;
+    }
+    .btn-util:hover { background: #dbe2ea; }
+
+    /* Number digits */
+    .btn-num {
+      background: var(--bg);
+      color: var(--text);
+    }
+    .btn-num:hover {
+      background: var(--surface);
+      border-color: #cbd5e1;
+    }
+
+    /* Binary operators */
+    .btn-op {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    .btn-op:hover {
+      background: var(--accent-dark);
+      border-color: var(--accent-dark);
+    }
+
+    .btn-op.active-op {
+      background: var(--accent-dark);
+      border-color: var(--accent-dark);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.18);
+    }
+
+    /* Equals */
+    .btn-equals {
+      grid-column: 1 / -1;
+      height: 48px;
+      background: var(--accent-dark);
+      color: #fff;
+      border-color: var(--accent-dark);
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      box-shadow: 0 2px 8px rgba(15, 118, 110, 0.26);
+    }
+    .btn-equals:hover {
+      background: #0a6259;
+      box-shadow: 0 3px 12px rgba(15, 118, 110, 0.33);
+    }
+    .btn-equals:active {
+      transform: scale(0.97);
+    }
+
+    /* ── Content sections ── */
+    .content-section {
+      margin-top: 52px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .content-section h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      letter-spacing: -0.01em;
+    }
+
+    .content-section p {
+      color: var(--muted);
+      font-size: 0.96rem;
+      margin-bottom: 12px;
+    }
+
+    .content-section p:last-child { margin-bottom: 0; }
+
+    /* ── FAQ ── */
+    .faq-list { margin-top: 4px; }
+    .faq-item { margin-bottom: 26px; }
+    .faq-item:last-child { margin-bottom: 0; }
+
+    .faq-item h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .faq-item p {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: 56px;
+      padding: 24px 0 32px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 480px) {
+      h1 { font-size: 1.75rem; }
+      header { padding: 28px 0 16px; }
+      .sci-card { padding: 14px; }
+      .sci-grid .calc-btn { height: 38px; font-size: 0.72rem; }
+      .num-grid .calc-btn { height: 48px; }
+      .btn-equals { height: 44px; }
+    }
+
+    @media (max-width: 380px) {
+      .sci-grid { gap: 4px; }
+      .num-grid  { gap: 4px; }
+      .sci-card  { padding: 12px; }
+      .sci-grid .calc-btn { height: 36px; font-size: 0.68rem; }
+      .num-grid .calc-btn { height: 44px; font-size: 0.92rem; }
+    }
+  </style>
+
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6940565595128907" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>Scientific Calculator</h1>
+    <p class="subtitle">
+      A free scientific calculator online for students, engineers, and everyday maths. Use this calculator for trigonometry, logarithms, powers, roots, and more — no sign-up required.
+    </p>
+  </header>
+
+  <!-- AdSense slot 1 -->
+  <div class="ad-slot ad-leaderboard"><!-- AdSense slot 1 --></div>
+
+  <main>
+    <div class="tool-area">
+
+      <div class="sci-card">
+
+        <!-- Display -->
+        <div class="sci-display" aria-live="polite" aria-atomic="true">
+          <div class="display-indicators">
+            <span class="mem-indicator" id="mem-indicator" aria-label="Memory in use">M</span>
+            <span class="mode-indicator" id="mode-indicator">DEG</span>
+          </div>
+          <div class="sci-history" id="sci-history"></div>
+          <div class="sci-main"   id="sci-main">0</div>
+        </div>
+
+        <!-- All buttons -->
+        <div id="sci-buttons">
+
+          <!-- Scientific grid: 5 columns -->
+          <div class="sci-grid" role="group" aria-label="Scientific functions">
+
+            <!-- Row 1: Memory + Mode -->
+            <button class="calc-btn btn-mem"  data-action="memory" data-value="MC"   aria-label="Memory clear">MC</button>
+            <button class="calc-btn btn-mem"  data-action="memory" data-value="MR"   aria-label="Memory recall">MR</button>
+            <button class="calc-btn btn-mem"  data-action="memory" data-value="M+"   aria-label="Memory add">M+</button>
+            <button class="calc-btn btn-mem"  data-action="memory" data-value="M-"   aria-label="Memory subtract">M−</button>
+            <button class="calc-btn btn-mode" data-action="mode"   id="btn-mode"     aria-label="Toggle angle mode">DEG</button>
+
+            <!-- Row 2: Trig + constants -->
+            <button class="calc-btn btn-sci" data-action="unary"    data-value="sin"  aria-label="Sine">sin</button>
+            <button class="calc-btn btn-sci" data-action="unary"    data-value="cos"  aria-label="Cosine">cos</button>
+            <button class="calc-btn btn-sci" data-action="unary"    data-value="tan"  aria-label="Tangent">tan</button>
+            <button class="calc-btn btn-sci" data-action="pi"                         aria-label="Pi">π</button>
+            <button class="calc-btn btn-sci" data-action="euler"                      aria-label="Euler's number">e</button>
+
+            <!-- Row 3: Inverse trig + specials -->
+            <button class="calc-btn btn-sci" data-action="unary"    data-value="asin" aria-label="Inverse sine">sin⁻¹</button>
+            <button class="calc-btn btn-sci" data-action="unary"    data-value="acos" aria-label="Inverse cosine">cos⁻¹</button>
+            <button class="calc-btn btn-sci" data-action="unary"    data-value="atan" aria-label="Inverse tangent">tan⁻¹</button>
+            <button class="calc-btn btn-sci" data-action="unary"    data-value="fact" aria-label="Factorial">n!</button>
+            <button class="calc-btn btn-sci" data-action="unary"    data-value="abs"  aria-label="Absolute value">|x|</button>
+
+            <!-- Row 4: Logs + roots -->
+            <button class="calc-btn btn-sci" data-action="unary"    data-value="log"  aria-label="Log base 10">log</button>
+            <button class="calc-btn btn-sci" data-action="unary"    data-value="ln"   aria-label="Natural log">ln</button>
+            <button class="calc-btn btn-sci" data-action="unary"    data-value="sqrt" aria-label="Square root">√x</button>
+            <button class="calc-btn btn-sci" data-action="unary"    data-value="cbrt" aria-label="Cube root">∛x</button>
+            <button class="calc-btn btn-sci" data-action="unary"    data-value="recip" aria-label="Reciprocal">1/x</button>
+
+            <!-- Row 5: Powers -->
+            <button class="calc-btn btn-sci" data-action="unary"    data-value="sq"   aria-label="Square">x²</button>
+            <button class="calc-btn btn-sci" data-action="unary"    data-value="cube" aria-label="Cube">x³</button>
+            <button class="calc-btn btn-op"  data-action="operator" data-value="pow"  data-op="pow" aria-label="Power">xʸ</button>
+            <button class="calc-btn btn-sci" data-action="unary"    data-value="pow10" aria-label="10 to the x">10ˣ</button>
+            <button class="calc-btn btn-sci" data-action="unary"    data-value="expx" aria-label="e to the x">eˣ</button>
+
+            <!-- Row 6: Utility -->
+            <button class="calc-btn btn-util" data-action="doexp"                     aria-label="Scientific notation">EXP</button>
+            <button class="calc-btn btn-util" data-action="openParen"                 aria-label="Open parenthesis">(</button>
+            <button class="calc-btn btn-util" data-action="closeParen"                aria-label="Close parenthesis">)</button>
+            <button class="calc-btn btn-util" data-action="clear"                     aria-label="Clear all">C</button>
+            <button class="calc-btn btn-util" data-action="backspace"                 aria-label="Backspace">⌫</button>
+
+          </div>
+
+          <!-- Divider -->
+          <div class="grid-divider"></div>
+
+          <!-- Numpad: 4 columns -->
+          <div class="num-grid" role="group" aria-label="Number pad">
+
+            <button class="calc-btn btn-num" data-action="digit"    data-value="7">7</button>
+            <button class="calc-btn btn-num" data-action="digit"    data-value="8">8</button>
+            <button class="calc-btn btn-num" data-action="digit"    data-value="9">9</button>
+            <button class="calc-btn btn-op"  data-action="operator" data-value="/" data-op="/" aria-label="Divide">÷</button>
+
+            <button class="calc-btn btn-num" data-action="digit"    data-value="4">4</button>
+            <button class="calc-btn btn-num" data-action="digit"    data-value="5">5</button>
+            <button class="calc-btn btn-num" data-action="digit"    data-value="6">6</button>
+            <button class="calc-btn btn-op"  data-action="operator" data-value="*" data-op="*" aria-label="Multiply">×</button>
+
+            <button class="calc-btn btn-num" data-action="digit"    data-value="1">1</button>
+            <button class="calc-btn btn-num" data-action="digit"    data-value="2">2</button>
+            <button class="calc-btn btn-num" data-action="digit"    data-value="3">3</button>
+            <button class="calc-btn btn-op"  data-action="operator" data-value="-" data-op="-" aria-label="Subtract">−</button>
+
+            <button class="calc-btn btn-util" data-action="toggleSign" aria-label="Toggle sign">+/−</button>
+            <button class="calc-btn btn-num"  data-action="digit"    data-value="0">0</button>
+            <button class="calc-btn btn-num"  data-action="decimal"  aria-label="Decimal point">.</button>
+            <button class="calc-btn btn-op"   data-action="operator" data-value="+" data-op="+" aria-label="Add">+</button>
+
+            <button class="calc-btn btn-equals" data-action="calculate" aria-label="Equals">=</button>
+
+          </div>
+
+        </div><!-- /sci-buttons -->
+
+      </div><!-- /sci-card -->
+
+    </div>
+  </main>
+
+  <!-- AdSense slot 2 -->
+  <div class="ad-slot ad-below"><!-- AdSense slot 2 --></div>
+
+  <section class="content-section" aria-labelledby="how-heading">
+    <h2 id="how-heading">How to use this scientific calculator</h2>
+    <p>
+      Enter a number using the digit pad, then press any scientific function — <strong>sin</strong>, <strong>log</strong>, <strong>√x</strong>, <strong>x²</strong>, and so on — to apply it instantly to the displayed value. For binary operations like <strong>xʸ</strong> (power), enter the base, press <strong>xʸ</strong>, enter the exponent, then press <strong>=</strong>. Use the <strong>DEG/RAD</strong> button to toggle between degree and radian mode for all trigonometric functions; the active mode is always shown in the display.
+    </p>
+    <p>
+      Parentheses let you group sub-expressions: press <strong>(</strong>, enter your sub-expression, then press <strong>)</strong> to close it before continuing. The <strong>EXP</strong> button enters scientific notation — type a number, press EXP, then type the exponent (e.g. 1.5 EXP 3 gives 1500). For memory, use <strong>M+</strong> / <strong>M−</strong> to accumulate values and <strong>MR</strong> to recall the stored total; a small <strong>M</strong> badge in the display confirms when memory is non-zero.
+    </p>
+    <p>
+      Keyboard input is fully supported: type digits and operators directly, press <strong>Enter</strong> to evaluate, <strong>Backspace</strong> to delete, <strong>Escape</strong> to clear, and parentheses with <strong>(</strong> / <strong>)</strong>. The expression history above the main display always shows the last completed calculation so you can follow your working.
+    </p>
+  </section>
+
+  <section class="content-section" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <h3>What is a scientific calculator used for?</h3>
+        <p>A scientific calculator handles the extended maths needed in science, engineering, and advanced study — trigonometry, logarithms, exponents, roots, and more — beyond the four basic operations. It is a calculator for students taking physics, chemistry, or higher-level maths, as well as professionals who need precise results quickly.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What is the difference between DEG and RAD?</h3>
+        <p>DEG (degrees) and RAD (radians) are two units for measuring angles. A full circle is 360° in degrees and 2π ≈ 6.2832 in radians. Trigonometric functions (sin, cos, tan) give different results depending on which unit you use, so always check the mode matches your problem. Physics and engineering often work in radians; everyday geometry usually uses degrees.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>How do I calculate sin, cos, and tan?</h3>
+        <p>First set the correct angle mode with the <strong>DEG/RAD</strong> button. Then type your angle value — for example, 45 — and press <strong>sin</strong>, <strong>cos</strong>, or <strong>tan</strong>. The result appears instantly. For inverse functions (to find the angle from a ratio), use <strong>sin⁻¹</strong>, <strong>cos⁻¹</strong>, or <strong>tan⁻¹</strong> in the same way.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What is the e button on a scientific calculator?</h3>
+        <p>The <strong>e</strong> button inserts Euler's number (≈ 2.71828), the base of natural logarithms. It appears throughout calculus, statistics, and compound growth formulas. The related <strong>eˣ</strong> button computes e raised to the power of the current display value — useful for exponential growth and decay problems.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>How do I use memory functions?</h3>
+        <p>Press <strong>M+</strong> to add the current value to memory, or <strong>M−</strong> to subtract it. Press <strong>MR</strong> at any time to recall the stored total into the display. Press <strong>MC</strong> to clear the memory back to zero. A small <strong>M</strong> indicator appears in the display whenever memory holds a non-zero value, so you always know when something is stored.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Is this scientific calculator free?</h3>
+        <p>Yes, completely free. No account, no sign-up, and no usage limit. Use it as many times as you need in any browser, on any device, at no cost.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; <span id="year"></span> softeditools.com — Free online scientific calculator</p>
+  </footer>
+
+</div><!-- /container -->
+
+<script>
+  /* ── State ─────────────────────────────────────────────────── */
+  var state = {
+    current:      '0',
+    operand:      null,
+    operator:     null,
+    awaitingNext: false,
+    hasError:     false,
+    expression:   '',
+    memory:       0,
+    angleMode:    'DEG',
+    parenStack:   []
+  };
+
+  /* ── DOM refs ─────────────────────────────────────────────── */
+  var mainEl    = document.getElementById('sci-main');
+  var histEl    = document.getElementById('sci-history');
+  var memInd    = document.getElementById('mem-indicator');
+  var modeInd   = document.getElementById('mode-indicator');
+  var modeBtn   = document.getElementById('btn-mode');
+
+  /* ── Helpers ──────────────────────────────────────────────── */
+  function toRad(x)   { return state.angleMode === 'DEG' ? x * Math.PI / 180 : x; }
+  function fromRad(x) { return state.angleMode === 'DEG' ? x * 180 / Math.PI : x; }
+
+  function formatNum(n) {
+    if (isNaN(n) || !isFinite(n)) return 'Error';
+    var r = parseFloat(n.toPrecision(10));
+    if (Math.abs(r) >= 1e13 || (r !== 0 && Math.abs(r) < 1e-7)) {
+      return r.toExponential(5);
+    }
+    return String(r);
+  }
+
+  function factorial(n) {
+    n = Math.round(n);
+    if (n < 0 || n > 170) return NaN;
+    var r = 1;
+    for (var i = 2; i <= n; i++) r *= i;
+    return r;
+  }
+
+  var OP_SYMBOLS = { '+': '+', '-': '−', '*': '×', '/': '÷', 'pow': '^' };
+
+  function applyBinaryOp(a, op, b) {
+    switch (op) {
+      case '+':   return a + b;
+      case '-':   return a - b;
+      case '*':   return a * b;
+      case '/':   return a / b;
+      case 'pow': return Math.pow(a, b);
+      default:    return NaN;
+    }
+  }
+
+  /* ── Display update ───────────────────────────────────────── */
+  function updateDisplay() {
+    var text = state.hasError ? 'Error' : state.current;
+    mainEl.textContent = text;
+    histEl.textContent = state.expression;
+
+    var len = text.length;
+    if      (len > 16) mainEl.style.fontSize = '1rem';
+    else if (len > 13) mainEl.style.fontSize = '1.3rem';
+    else if (len > 10) mainEl.style.fontSize = '1.7rem';
+    else if (len > 7)  mainEl.style.fontSize = '2rem';
+    else               mainEl.style.fontSize = '2.3rem';
+
+    memInd.style.visibility  = state.memory !== 0  ? 'visible' : 'hidden';
+    modeInd.textContent       = state.angleMode;
+    modeBtn.textContent       = state.angleMode;
+
+    document.querySelectorAll('[data-op]').forEach(function(b) { b.classList.remove('active-op'); });
+    if (state.operator && state.awaitingNext) {
+      var active = document.querySelector('[data-op="' + state.operator + '"]');
+      if (active) active.classList.add('active-op');
+    }
+  }
+
+  /* ── Digit input ──────────────────────────────────────────── */
+  function inputDigit(d) {
+    if (state.hasError) { doClear(); return; }
+    if (state.awaitingNext) {
+      state.current     = d;
+      state.awaitingNext = false;
+    } else {
+      var eIdx = state.current.indexOf('e');
+      if (eIdx !== -1) {
+        var sign   = state.current[eIdx + 1] === '-' ? '-' : '';
+        var expDig = state.current.slice(eIdx + 1).replace('-', '');
+        if (expDig.length < 3) {
+          state.current = state.current.slice(0, eIdx + 1) + sign + expDig + d;
+        }
+      } else {
+        if (state.current === '0') { state.current = d; }
+        else if (state.current.length < 15) { state.current += d; }
+      }
+    }
+    updateDisplay();
+  }
+
+  /* ── Decimal ──────────────────────────────────────────────── */
+  function inputDecimal() {
+    if (state.hasError) { doClear(); return; }
+    if (state.awaitingNext) {
+      state.current = '0.';
+      state.awaitingNext = false;
+      updateDisplay();
+      return;
+    }
+    if (state.current.indexOf('.') === -1 && state.current.indexOf('e') === -1) {
+      state.current += '.';
+      updateDisplay();
+    }
+  }
+
+  /* ── Binary operator ──────────────────────────────────────── */
+  function inputOperator(op) {
+    if (state.hasError) return;
+
+    if (state.operator && !state.awaitingNext) {
+      var interim = applyBinaryOp(parseFloat(state.operand), state.operator, parseFloat(state.current));
+      if (isNaN(interim) || !isFinite(interim)) { setError(state.operand + ' ' + (OP_SYMBOLS[state.operator] || state.operator) + ' ' + state.current); return; }
+      state.current = formatNum(interim);
+      state.operand = state.current;
+    } else {
+      state.operand = state.current;
+    }
+
+    state.operator    = op;
+    state.expression  = state.current + ' ' + (OP_SYMBOLS[op] || op);
+    state.awaitingNext = true;
+    updateDisplay();
+  }
+
+  /* ── Unary function ───────────────────────────────────────── */
+  function applyUnary(fn) {
+    if (state.hasError) return;
+    var x = parseFloat(state.current);
+    if (isNaN(x)) return;
+
+    var result, label;
+
+    switch (fn) {
+      case 'sin':   result = Math.sin(toRad(x));    label = 'sin(' + x + ')';   break;
+      case 'cos':   result = Math.cos(toRad(x));    label = 'cos(' + x + ')';   break;
+      case 'tan':
+        if (state.angleMode === 'DEG' && x % 180 === 90) { result = NaN; }
+        else { result = Math.tan(toRad(x)); }
+        label = 'tan(' + x + ')';
+        break;
+      case 'asin':  result = fromRad(Math.asin(x)); label = 'sin⁻¹(' + x + ')'; break;
+      case 'acos':  result = fromRad(Math.acos(x)); label = 'cos⁻¹(' + x + ')'; break;
+      case 'atan':  result = fromRad(Math.atan(x)); label = 'tan⁻¹(' + x + ')'; break;
+      case 'log':   result = Math.log10(x);         label = 'log(' + x + ')';   break;
+      case 'ln':    result = Math.log(x);           label = 'ln(' + x + ')';    break;
+      case 'sqrt':  result = Math.sqrt(x);          label = '√(' + x + ')';     break;
+      case 'cbrt':  result = Math.cbrt(x);          label = '∛(' + x + ')';     break;
+      case 'sq':    result = x * x;                 label = '(' + x + ')²';     break;
+      case 'cube':  result = x * x * x;             label = '(' + x + ')³';     break;
+      case 'pow10': result = Math.pow(10, x);       label = '10^(' + x + ')';   break;
+      case 'expx':  result = Math.exp(x);           label = 'e^(' + x + ')';    break;
+      case 'recip': result = 1 / x;                 label = '1/(' + x + ')';    break;
+      case 'abs':   result = Math.abs(x);           label = '|' + x + '|';      break;
+      case 'fact':  result = factorial(x);          label = x + '!';            break;
+      default: return;
+    }
+
+    if (isNaN(result) || !isFinite(result)) {
+      setError(label);
+      return;
+    }
+
+    state.expression  = label + ' =';
+    state.current     = formatNum(result);
+    state.awaitingNext = true;
+    updateDisplay();
+  }
+
+  /* ── Constants ────────────────────────────────────────────── */
+  function inputConstant(val, label) {
+    if (state.hasError) { doClear(); return; }
+    state.current     = String(val);
+    state.awaitingNext = false;
+    updateDisplay();
+  }
+
+  /* ── Calculate ────────────────────────────────────────────── */
+  function doCalculate() {
+    if (!state.operator || state.hasError || state.awaitingNext) return;
+
+    var a   = parseFloat(state.operand);
+    var b   = parseFloat(state.current);
+    var sym = OP_SYMBOLS[state.operator] || state.operator;
+    var expr = state.operand + ' ' + sym + ' ' + state.current + ' =';
+
+    var result = applyBinaryOp(a, state.operator, b);
+
+    if (isNaN(result) || !isFinite(result)) {
+      setError(expr);
+      return;
+    }
+
+    state.expression  = expr;
+    state.current     = formatNum(result);
+    state.operator    = null;
+    state.operand     = null;
+    state.awaitingNext = true;
+    updateDisplay();
+  }
+
+  /* ── Error helper ─────────────────────────────────────────── */
+  function setError(expr) {
+    state.hasError    = true;
+    state.expression  = expr || '';
+    state.operator    = null;
+    state.awaitingNext = true;
+    updateDisplay();
+  }
+
+  /* ── Clear ────────────────────────────────────────────────── */
+  function doClear() {
+    state.current     = '0';
+    state.operand     = null;
+    state.operator    = null;
+    state.awaitingNext = false;
+    state.hasError    = false;
+    state.expression  = '';
+    state.parenStack  = [];
+    updateDisplay();
+  }
+
+  /* ── Backspace ────────────────────────────────────────────── */
+  function doBackspace() {
+    if (state.hasError || state.awaitingNext) return;
+    state.current = state.current.length > 1 ? state.current.slice(0, -1) : '0';
+    updateDisplay();
+  }
+
+  /* ── Toggle sign ──────────────────────────────────────────── */
+  function doToggleSign() {
+    if (state.hasError) return;
+    var eIdx = state.current.indexOf('e');
+    if (eIdx !== -1) {
+      var mant = state.current.slice(0, eIdx);
+      var expPart = state.current.slice(eIdx + 1);
+      state.current = mant + 'e' + (expPart.startsWith('-') ? expPart.slice(1) : '-' + expPart);
+    } else {
+      var num = parseFloat(state.current);
+      if (!isNaN(num) && num !== 0) state.current = String(-num);
+    }
+    updateDisplay();
+  }
+
+  /* ── EXP notation ─────────────────────────────────────────── */
+  function doEXP() {
+    if (state.hasError) return;
+    if (state.current.indexOf('e') !== -1) return;
+    if (state.awaitingNext) { state.current = '1'; state.awaitingNext = false; }
+    state.current += 'e';
+    updateDisplay();
+  }
+
+  /* ── Parentheses ──────────────────────────────────────────── */
+  function doOpenParen() {
+    if (state.hasError) return;
+    state.parenStack.push({
+      operand:    state.operand,
+      operator:   state.operator,
+      expression: state.expression
+    });
+    state.operand     = null;
+    state.operator    = null;
+    state.current     = '0';
+    state.awaitingNext = true;
+    state.expression  += '(';
+    updateDisplay();
+  }
+
+  function doCloseParen() {
+    if (state.parenStack.length === 0 || state.hasError) return;
+
+    var inner = parseFloat(state.current);
+    if (state.operator && state.operand !== null && !state.awaitingNext) {
+      inner = applyBinaryOp(parseFloat(state.operand), state.operator, inner);
+    }
+
+    if (isNaN(inner) || !isFinite(inner)) { setError(state.expression + ')'); return; }
+
+    var frame         = state.parenStack.pop();
+    state.operand     = frame.operand;
+    state.operator    = frame.operator;
+    state.current     = formatNum(inner);
+    state.awaitingNext = false;
+    state.expression  += ')';
+    updateDisplay();
+  }
+
+  /* ── Memory ───────────────────────────────────────────────── */
+  function doMemory(action) {
+    var x = parseFloat(state.current);
+    if (action === 'MC') {
+      state.memory = 0;
+    } else if (action === 'MR') {
+      state.current     = formatNum(state.memory);
+      state.awaitingNext = false;
+    } else if (action === 'M+') {
+      if (!isNaN(x)) state.memory += x;
+    } else if (action === 'M-') {
+      if (!isNaN(x)) state.memory -= x;
+    }
+    updateDisplay();
+  }
+
+  /* ── Mode toggle ──────────────────────────────────────────── */
+  function toggleMode() {
+    state.angleMode = state.angleMode === 'DEG' ? 'RAD' : 'DEG';
+    updateDisplay();
+  }
+
+  /* ── Button click handler ─────────────────────────────────── */
+  document.getElementById('sci-buttons').addEventListener('click', function(e) {
+    var btn = e.target.closest('.calc-btn');
+    if (!btn) return;
+    var action = btn.dataset.action;
+    var value  = btn.dataset.value;
+
+    switch (action) {
+      case 'digit':      inputDigit(value);          break;
+      case 'decimal':    inputDecimal();             break;
+      case 'operator':   inputOperator(value);       break;
+      case 'calculate':  doCalculate();              break;
+      case 'clear':      doClear();                  break;
+      case 'backspace':  doBackspace();              break;
+      case 'toggleSign': doToggleSign();             break;
+      case 'doexp':      doEXP();                    break;
+      case 'openParen':  doOpenParen();              break;
+      case 'closeParen': doCloseParen();             break;
+      case 'unary':      applyUnary(value);          break;
+      case 'pi':         inputConstant(Math.PI);     break;
+      case 'euler':      inputConstant(Math.E);      break;
+      case 'memory':     doMemory(value);            break;
+      case 'mode':       toggleMode();               break;
+    }
+  });
+
+  /* ── Keyboard support ─────────────────────────────────────── */
+  document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    switch (e.key) {
+      case '0': case '1': case '2': case '3': case '4':
+      case '5': case '6': case '7': case '8': case '9':
+        inputDigit(e.key); break;
+      case '.': case ',': inputDecimal();    break;
+      case '+': inputOperator('+');         break;
+      case '-': inputOperator('-');         break;
+      case '*': inputOperator('*');         break;
+      case '/': e.preventDefault(); inputOperator('/'); break;
+      case '^': inputOperator('pow');       break;
+      case 'Enter': case '=': doCalculate(); break;
+      case 'Backspace':  doBackspace();     break;
+      case 'Escape':     doClear();         break;
+      case '(':          doOpenParen();     break;
+      case ')':          doCloseParen();    break;
+    }
+  });
+
+  /* ── Init ─────────────────────────────────────────────────── */
+  document.getElementById('year').textContent = new Date().getFullYear();
+  updateDisplay();
+</script>
+
+</body>
+</html>
