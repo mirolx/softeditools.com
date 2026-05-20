@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Calculator — Free Basic Calculator</title>
+  <meta name="description" content="Free online basic calculator. Add, subtract, multiply and divide instantly in your browser. Simple, fast, and no sign-up required.">
+  <link rel="canonical" href="https://softeditools.com/calculator">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Online Calculator — Free Basic Calculator">
+  <meta property="og:description" content="Free online basic calculator. Add, subtract, multiply and divide instantly in your browser. Simple, fast, and no sign-up required.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://softeditools.com/calculator">
+
+  <meta name="robots" content="index, follow">
+
+  <!-- Schema Markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Online Calculator",
+    "url": "https://softeditools.com/calculator",
+    "description": "Free online basic calculator. Add, subtract, multiply and divide instantly in your browser. Simple, fast, and no sign-up required.",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent:       #0d9488;
+      --accent-dark:  #0f766e;
+      --accent-light: #f0fdfa;
+      --text:         #1e293b;
+      --muted:        #64748b;
+      --bg:           #ffffff;
+      --surface:      #f8fafc;
+      --border:       #e2e8f0;
+      --radius:       8px;
+      --font:         Inter, 'Segoe UI', Arial, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 16px;
+    }
+
+    .container {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 44px 0 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: var(--text);
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 560px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ── Ad slots ── */
+    .ad-slot {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px auto;
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: 4px;
+      color: var(--muted);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .ad-leaderboard { width: 728px; max-width: 100%; height: 90px; }
+    .ad-below       { width: 728px; max-width: 100%; height: 90px; }
+
+    @media (max-width: 600px) {
+      .ad-leaderboard,
+      .ad-below { width: 320px; height: 50px; }
+    }
+
+    /* ── Tool area ── */
+    .tool-area { margin: 8px 0 0; }
+
+    /* ── Calculator card ── */
+    .calculator-card {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      max-width: 380px;
+      margin: 0 auto;
+    }
+
+    /* ── Display ── */
+    .calc-display {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px 18px 12px;
+      text-align: right;
+      margin-bottom: 16px;
+      min-height: 86px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .calc-history {
+      font-size: 0.8rem;
+      color: var(--muted);
+      min-height: 18px;
+      margin-bottom: 4px;
+      font-family: 'Courier New', Courier, monospace;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      letter-spacing: 0.02em;
+    }
+
+    .calc-main {
+      font-size: 2.4rem;
+      font-weight: 600;
+      color: var(--text);
+      font-family: 'Courier New', Courier, monospace;
+      line-height: 1.1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      letter-spacing: -0.02em;
+    }
+
+    /* ── Button grid ── */
+    .calc-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .calc-btn {
+      height: 58px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      font-family: var(--font);
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.1s, box-shadow 0.1s, border-color 0.1s, transform 0.08s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .calc-btn:active {
+      transform: scale(0.92);
+    }
+
+    /* Number buttons */
+    .calc-btn.btn-num {
+      background: var(--bg);
+      color: var(--text);
+    }
+    .calc-btn.btn-num:hover {
+      background: var(--surface);
+      border-color: #cbd5e1;
+    }
+
+    /* Utility buttons: C, CE, ⌫, %, +/− */
+    .calc-btn.btn-util {
+      background: #f1f5f9;
+      color: #475569;
+      font-weight: 600;
+      font-size: 0.92rem;
+      border-color: #dde3ec;
+    }
+    .calc-btn.btn-util:hover {
+      background: #e2e8f0;
+    }
+
+    /* Operator buttons: +, −, ×, ÷ */
+    .calc-btn.btn-op {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      font-weight: 600;
+      font-size: 1.15rem;
+    }
+    .calc-btn.btn-op:hover {
+      background: var(--accent-dark);
+      border-color: var(--accent-dark);
+    }
+
+    .calc-btn.btn-op.active-op {
+      background: var(--accent-dark);
+      border-color: var(--accent-dark);
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.18);
+    }
+
+    /* Equals button */
+    .calc-btn.btn-equals {
+      grid-column: 1 / -1;
+      height: 50px;
+      background: var(--accent-dark);
+      color: #fff;
+      border-color: var(--accent-dark);
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      box-shadow: 0 2px 8px rgba(15, 118, 110, 0.28);
+    }
+    .calc-btn.btn-equals:hover {
+      background: #0a6259;
+      box-shadow: 0 3px 12px rgba(15, 118, 110, 0.35);
+    }
+    .calc-btn.btn-equals:active {
+      transform: scale(0.97);
+    }
+
+    /* ── Content sections ── */
+    .content-section {
+      margin-top: 52px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .content-section h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      letter-spacing: -0.01em;
+    }
+
+    .content-section p {
+      color: var(--muted);
+      font-size: 0.96rem;
+      margin-bottom: 12px;
+    }
+
+    .content-section p:last-child { margin-bottom: 0; }
+
+    /* ── FAQ ── */
+    .faq-list { margin-top: 4px; }
+    .faq-item { margin-bottom: 26px; }
+    .faq-item:last-child { margin-bottom: 0; }
+
+    .faq-item h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .faq-item p {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: 56px;
+      padding: 24px 0 32px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 480px) {
+      h1 { font-size: 1.75rem; }
+      header { padding: 28px 0 16px; }
+      .calculator-card { padding: 16px; }
+      .calc-btn { height: 52px; }
+      .calc-btn.btn-equals { height: 46px; }
+    }
+
+    @media (max-width: 360px) {
+      .calc-buttons { gap: 6px; }
+      .calc-btn { height: 48px; font-size: 0.9rem; }
+      .calc-btn.btn-op { font-size: 1.05rem; }
+    }
+  </style>
+
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6940565595128907" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>Online Calculator</h1>
+    <p class="subtitle">
+      A free online calculator for fast, everyday arithmetic. Use this basic calculator to add, subtract, multiply, and divide — no download or sign-up required.
+    </p>
+  </header>
+
+  <!-- AdSense slot 1 -->
+  <div class="ad-slot ad-leaderboard"><!-- AdSense slot 1 --></div>
+
+  <main>
+    <div class="tool-area">
+
+      <div class="calculator-card">
+
+        <div class="calc-display" aria-live="polite" aria-atomic="true">
+          <div class="calc-history" id="history-display"></div>
+          <div class="calc-main" id="main-display">0</div>
+        </div>
+
+        <div class="calc-buttons" role="group" aria-label="Calculator buttons">
+
+          <!-- Row 1: utility -->
+          <button class="calc-btn btn-util" data-action="clear"       aria-label="Clear all">C</button>
+          <button class="calc-btn btn-util" data-action="clearEntry"  aria-label="Clear entry">CE</button>
+          <button class="calc-btn btn-util" data-action="backspace"   aria-label="Backspace">⌫</button>
+          <button class="calc-btn btn-util" data-action="percentage"  aria-label="Percent">%</button>
+
+          <!-- Row 2 -->
+          <button class="calc-btn btn-num"  data-action="digit"    data-value="7">7</button>
+          <button class="calc-btn btn-num"  data-action="digit"    data-value="8">8</button>
+          <button class="calc-btn btn-num"  data-action="digit"    data-value="9">9</button>
+          <button class="calc-btn btn-op"   data-action="operator" data-value="/" aria-label="Divide">÷</button>
+
+          <!-- Row 3 -->
+          <button class="calc-btn btn-num"  data-action="digit"    data-value="4">4</button>
+          <button class="calc-btn btn-num"  data-action="digit"    data-value="5">5</button>
+          <button class="calc-btn btn-num"  data-action="digit"    data-value="6">6</button>
+          <button class="calc-btn btn-op"   data-action="operator" data-value="*" aria-label="Multiply">×</button>
+
+          <!-- Row 4 -->
+          <button class="calc-btn btn-num"  data-action="digit"    data-value="1">1</button>
+          <button class="calc-btn btn-num"  data-action="digit"    data-value="2">2</button>
+          <button class="calc-btn btn-num"  data-action="digit"    data-value="3">3</button>
+          <button class="calc-btn btn-op"   data-action="operator" data-value="-" aria-label="Subtract">−</button>
+
+          <!-- Row 5 -->
+          <button class="calc-btn btn-util" data-action="toggleSign" aria-label="Toggle sign">+/−</button>
+          <button class="calc-btn btn-num"  data-action="digit"    data-value="0">0</button>
+          <button class="calc-btn btn-num"  data-action="decimal"  aria-label="Decimal point">.</button>
+          <button class="calc-btn btn-op"   data-action="operator" data-value="+" aria-label="Add">+</button>
+
+          <!-- Row 6: equals — spans full width -->
+          <button class="calc-btn btn-equals" data-action="calculate" aria-label="Equals">=</button>
+
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- AdSense slot 2 -->
+  <div class="ad-slot ad-below"><!-- AdSense slot 2 --></div>
+
+  <section class="content-section" aria-labelledby="how-heading">
+    <h2 id="how-heading">How to use this calculator</h2>
+    <p>
+      Click any number button to enter a value, then choose an arithmetic operator — add (+), subtract (−), multiply (×), or divide (÷). Enter a second number and press <strong>=</strong> to see the result. The expression history above the main display shows what you last calculated, so you always know where a number came from.
+    </p>
+    <p>
+      Use <strong>C</strong> to reset the calculator entirely. Press <strong>CE</strong> to clear only the current entry while keeping the previous value and operator in memory — handy when you mistype a number mid-calculation. The <strong>⌫</strong> button removes the last digit you typed. The <strong>%</strong> key converts the current number to its percentage value, and <strong>+/−</strong> flips between positive and negative.
+    </p>
+    <p>
+      Keyboard users can type digits and operators directly, press <strong>Enter</strong> or <strong>=</strong> to calculate, <strong>Backspace</strong> to delete a digit, <strong>Escape</strong> to clear all, and <strong>Delete</strong> to clear the current entry.
+    </p>
+  </section>
+
+  <section class="content-section" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <h3>Is this calculator free?</h3>
+        <p>Yes, completely free. No account, no sign-up, and no usage limit. Use it as many times as you need at no cost.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Can I use this calculator on my phone?</h3>
+        <p>Yes. The calculator is fully responsive and works on any device — phones, tablets, and desktops. The buttons are sized for comfortable tapping on touchscreens without needing to zoom in.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Does this calculator support keyboard input?</h3>
+        <p>Yes. You can type digits and operators (+ − * /) directly from your keyboard, press Enter or = to evaluate, Backspace to delete the last digit, Escape to clear all, and Delete to clear the current entry only.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What is the percentage button for?</h3>
+        <p>The % button converts the current number to its percentage form. On its own, pressing 50 then % gives 0.5. When used mid-calculation — for example, 200 + 10 % — it computes 10% of 200 (which is 20), giving a final result of 220. This is useful for calculating tips, discounts, and markups.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>How do I clear the calculator?</h3>
+        <p>Press <strong>C</strong> to reset everything — the display returns to 0 and any stored operator or previous value is wiped. On a keyboard, the Escape key does the same thing.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What does CE mean on a calculator?</h3>
+        <p>CE stands for "Clear Entry." Unlike C, which resets the whole calculator, CE only clears the number currently shown on the display while leaving the previous value and operator intact. If you are in the middle of 100 × and you accidentally typed 52 instead of 25, press CE, type 25, and continue — the × and the 100 are still waiting in memory.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; <span id="year"></span> softeditools.com — Free online calculator</p>
+  </footer>
+
+</div><!-- /container -->
+
+<script>
+  var state = {
+    current:     '0',
+    previous:    '',
+    operator:    null,
+    awaitingNext: false,
+    expression:  '',
+    hasError:    false
+  };
+
+  var mainDisplay = document.getElementById('main-display');
+  var histDisplay = document.getElementById('history-display');
+
+  function opSymbol(op) {
+    if (op === '*') return '×';
+    if (op === '/') return '÷';
+    if (op === '-') return '−';
+    return op;
+  }
+
+  function updateDisplay() {
+    var text = state.hasError ? 'Error' : state.current;
+    mainDisplay.textContent = text;
+    histDisplay.textContent = state.expression;
+
+    var len = text.length;
+    if      (len > 14) mainDisplay.style.fontSize = '1.2rem';
+    else if (len > 11) mainDisplay.style.fontSize = '1.6rem';
+    else if (len > 8)  mainDisplay.style.fontSize = '2rem';
+    else               mainDisplay.style.fontSize = '2.4rem';
+  }
+
+  function syncActiveOp() {
+    document.querySelectorAll('.btn-op').forEach(function(btn) {
+      btn.classList.remove('active-op');
+    });
+    if (state.operator && state.awaitingNext) {
+      var selector = '.btn-op[data-value="' + state.operator + '"]';
+      var active = document.querySelector(selector);
+      if (active) active.classList.add('active-op');
+    }
+  }
+
+  /* ── Core operations ── */
+
+  function inputDigit(d) {
+    if (state.hasError) { doClear(); return; }
+    if (state.awaitingNext) {
+      state.current = d;
+      state.awaitingNext = false;
+    } else {
+      if (state.current === '0') {
+        state.current = d;
+      } else if (state.current.length < 15) {
+        state.current += d;
+      }
+    }
+    updateDisplay();
+    syncActiveOp();
+  }
+
+  function inputDecimal() {
+    if (state.hasError) { doClear(); return; }
+    if (state.awaitingNext) {
+      state.current = '0.';
+      state.awaitingNext = false;
+      updateDisplay();
+      return;
+    }
+    if (state.current.indexOf('.') === -1) {
+      state.current += '.';
+      updateDisplay();
+    }
+  }
+
+  function runCalc() {
+    var prev = parseFloat(state.previous);
+    var curr = parseFloat(state.current);
+    if (isNaN(prev) || isNaN(curr)) return null;
+
+    var result;
+    switch (state.operator) {
+      case '+': result = prev + curr; break;
+      case '-': result = prev - curr; break;
+      case '*': result = prev * curr; break;
+      case '/':
+        if (curr === 0) {
+          state.hasError   = true;
+          state.expression = state.previous + ' ÷ 0 =';
+          state.operator   = null;
+          state.awaitingNext = true;
+          updateDisplay();
+          syncActiveOp();
+          return null;
+        }
+        result = prev / curr;
+        break;
+      default: return null;
+    }
+
+    return parseFloat(result.toPrecision(10));
+  }
+
+  function inputOperator(op) {
+    if (state.hasError) return;
+
+    if (state.operator && !state.awaitingNext) {
+      var interim = runCalc();
+      if (interim === null) return;
+      state.current  = String(interim);
+      state.previous = state.current;
+    } else {
+      state.previous = state.current;
+    }
+
+    state.operator    = op;
+    state.expression  = state.previous + ' ' + opSymbol(op);
+    state.awaitingNext = true;
+    updateDisplay();
+    syncActiveOp();
+  }
+
+  function doCalculate() {
+    if (!state.operator || state.hasError || state.awaitingNext) return;
+
+    var fullExpr = state.previous + ' ' + opSymbol(state.operator) + ' ' + state.current + ' =';
+    var result   = runCalc();
+    if (result === null) return;
+
+    state.expression  = fullExpr;
+    state.current     = String(result);
+    state.operator    = null;
+    state.previous    = '';
+    state.awaitingNext = true;
+    updateDisplay();
+    syncActiveOp();
+  }
+
+  function doClear() {
+    state.current     = '0';
+    state.previous    = '';
+    state.operator    = null;
+    state.awaitingNext = false;
+    state.expression  = '';
+    state.hasError    = false;
+    updateDisplay();
+    syncActiveOp();
+  }
+
+  function doClearEntry() {
+    if (state.hasError) { doClear(); return; }
+    state.current     = '0';
+    state.awaitingNext = false;
+    updateDisplay();
+  }
+
+  function doBackspace() {
+    if (state.hasError || state.awaitingNext) return;
+    state.current = state.current.length > 1 ? state.current.slice(0, -1) : '0';
+    updateDisplay();
+  }
+
+  function doPercentage() {
+    if (state.hasError) return;
+    var num = parseFloat(state.current);
+    if (isNaN(num)) return;
+    var result = (state.operator && state.previous)
+      ? parseFloat(state.previous) * (num / 100)
+      : num / 100;
+    state.current = String(parseFloat(result.toPrecision(10)));
+    state.awaitingNext = false;
+    updateDisplay();
+  }
+
+  function doToggleSign() {
+    if (state.hasError) return;
+    var num = parseFloat(state.current);
+    if (isNaN(num) || num === 0) return;
+    state.current = String(-num);
+    updateDisplay();
+  }
+
+  /* ── Button click handler ── */
+  document.querySelector('.calc-buttons').addEventListener('click', function(e) {
+    var btn = e.target.closest('.calc-btn');
+    if (!btn) return;
+    switch (btn.dataset.action) {
+      case 'digit':      inputDigit(btn.dataset.value); break;
+      case 'decimal':    inputDecimal();                break;
+      case 'operator':   inputOperator(btn.dataset.value); break;
+      case 'calculate':  doCalculate();                 break;
+      case 'clear':      doClear();                     break;
+      case 'clearEntry': doClearEntry();                break;
+      case 'backspace':  doBackspace();                 break;
+      case 'percentage': doPercentage();                break;
+      case 'toggleSign': doToggleSign();                break;
+    }
+  });
+
+  /* ── Keyboard handler ── */
+  document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    switch (e.key) {
+      case '0': case '1': case '2': case '3': case '4':
+      case '5': case '6': case '7': case '8': case '9':
+        inputDigit(e.key); break;
+      case '.': case ',': inputDecimal(); break;
+      case '+': inputOperator('+'); break;
+      case '-': inputOperator('-'); break;
+      case '*': inputOperator('*'); break;
+      case '/': e.preventDefault(); inputOperator('/'); break;
+      case 'Enter': case '=': doCalculate(); break;
+      case 'Backspace': doBackspace(); break;
+      case 'Escape':    doClear();     break;
+      case 'Delete':    doClearEntry(); break;
+      case '%':         doPercentage(); break;
+    }
+  });
+
+  /* ── Init ── */
+  document.getElementById('year').textContent = new Date().getFullYear();
+  updateDisplay();
+</script>
+
+</body>
+</html>
