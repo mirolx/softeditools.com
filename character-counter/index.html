@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Character Counter — Count Characters Online Free</title>
+  <meta name="description" content="Free online character counter. Instantly count characters, letters, numbers, and lines. No sign-up required.">
+  <link rel="canonical" href="https://softeditools.com/character-counter">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Character Counter — Count Characters Online Free">
+  <meta property="og:description" content="Free online character counter. Instantly count characters, letters, numbers, and lines. No sign-up required.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://softeditools.com/character-counter">
+
+  <meta name="robots" content="index, follow">
+
+  <!-- Schema Markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Character Counter",
+    "url": "https://softeditools.com/character-counter",
+    "description": "Free online character counter. Instantly count characters, letters, numbers, and lines. No sign-up required.",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent:       #0d9488;
+      --accent-dark:  #0f766e;
+      --accent-light: #f0fdfa;
+      --text:         #1e293b;
+      --muted:        #64748b;
+      --bg:           #ffffff;
+      --surface:      #f8fafc;
+      --border:       #e2e8f0;
+      --radius:       8px;
+      --font:         Inter, 'Segoe UI', Arial, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 16px;
+    }
+
+    .container {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 44px 0 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: var(--text);
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 560px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ── Ad slots ── */
+    .ad-slot {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px auto;
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: 4px;
+      color: var(--muted);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .ad-leaderboard { width: 728px; max-width: 100%; height: 90px; }
+    .ad-below       { width: 728px; max-width: 100%; height: 90px; }
+
+    @media (max-width: 600px) {
+      .ad-leaderboard,
+      .ad-below { width: 320px; height: 50px; }
+    }
+
+    /* ── Tool area ── */
+    .tool-area { margin: 8px 0 0; }
+
+    #text-input {
+      width: 100%;
+      min-height: 230px;
+      padding: 16px 18px;
+      font-family: var(--font);
+      font-size: 1rem;
+      color: var(--text);
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      resize: vertical;
+      line-height: 1.7;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    #text-input:focus { border-color: var(--accent); }
+
+    #text-input::placeholder { color: #cbd5e1; }
+
+    .toolbar {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+
+    #clear-btn {
+      padding: 8px 22px;
+      background: var(--bg);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: var(--font);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+
+    #clear-btn:hover {
+      background: #fef2f2;
+      border-color: #fca5a5;
+      color: #dc2626;
+    }
+
+    /* ── Stats grid ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 560px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 14px 18px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2.1rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
+
+    /* ── Most frequent character panel ── */
+    .freq-section {
+      margin-top: 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .freq-heading {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .freq-body {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .freq-char {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+      min-width: 2rem;
+      text-align: center;
+    }
+
+    .freq-detail {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .freq-empty {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    /* ── Content sections ── */
+    .content-section {
+      margin-top: 52px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .content-section h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      letter-spacing: -0.01em;
+    }
+
+    .content-section p {
+      color: var(--muted);
+      font-size: 0.96rem;
+      margin-bottom: 12px;
+    }
+
+    .content-section p:last-child { margin-bottom: 0; }
+
+    /* ── FAQ ── */
+    .faq-list { margin-top: 4px; }
+
+    .faq-item { margin-bottom: 26px; }
+
+    .faq-item:last-child { margin-bottom: 0; }
+
+    .faq-item h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .faq-item p {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: 56px;
+      padding: 24px 0 32px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    /* ── Mobile tweaks ── */
+    @media (max-width: 480px) {
+      h1 { font-size: 1.75rem; }
+      .stat-value { font-size: 1.65rem; }
+      header { padding: 28px 0 16px; }
+      .freq-section { flex-direction: column; align-items: flex-start; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>Character Counter</h1>
+    <p class="subtitle">
+      Use this free character counter to count characters online instantly — paste any text and
+      see characters, letters, numbers, words, and lines update in real time.
+    </p>
+  </header>
+
+  <!-- AdSense slot 1 -->
+  <div class="ad-slot ad-leaderboard"><!-- AdSense slot 1 --></div>
+
+  <main>
+    <div class="tool-area">
+
+      <textarea
+        id="text-input"
+        placeholder="Type or paste your text here to start counting characters, letters, numbers, and more…"
+        aria-label="Text input for character counting"
+        spellcheck="true"
+      ></textarea>
+
+      <div class="toolbar">
+        <button id="clear-btn" aria-label="Clear all text">Clear</button>
+      </div>
+
+      <div class="stats-grid" role="region" aria-label="Text statistics">
+        <div class="stat-card">
+          <div class="stat-value" id="char-count">0</div>
+          <div class="stat-label">Characters</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="char-no-space">0</div>
+          <div class="stat-label">No Spaces</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="letter-count">0</div>
+          <div class="stat-label">Letters</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="number-count">0</div>
+          <div class="stat-label">Numbers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="word-count">0</div>
+          <div class="stat-label">Words</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="line-count">0</div>
+          <div class="stat-label">Lines</div>
+        </div>
+      </div>
+
+      <div class="freq-section" aria-live="polite">
+        <div class="freq-heading">Most Frequent<br>Character</div>
+        <div class="freq-body" id="freq-body">
+          <span class="freq-empty">Start typing to see the most frequent character…</span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- AdSense slot 2 -->
+  <div class="ad-slot ad-below"><!-- AdSense slot 2 --></div>
+
+  <section class="content-section" aria-labelledby="how-heading">
+    <h2 id="how-heading">How to use this character counter</h2>
+    <p>
+      Type or paste your text directly into the box above. Every statistic — character count
+      (with and without spaces), letter count, number count, word count, and line count —
+      updates in real time as you type. No button to click, no page refresh needed.
+    </p>
+    <p>
+      To start fresh, click the <strong>Clear</strong> button at the top-right of the text area.
+      The panel below the stats shows the most frequent character in your text (excluding spaces),
+      which can help you spot overused letters or symbols at a glance.
+    </p>
+    <p>
+      Everything runs entirely inside your browser. Your text is never uploaded to any server,
+      so your content stays completely private. This free character counter works in every modern
+      browser on both desktop and mobile devices.
+    </p>
+  </section>
+
+  <section class="content-section" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <h3>What counts as a character?</h3>
+        <p>
+          Any single symbol in your text counts as a character — letters, digits, punctuation
+          marks, symbols, and spaces. The "Characters" count on this page includes every one of
+          them. The "No Spaces" count is the same but with all whitespace (spaces, tabs, line
+          breaks) removed.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Is this character counter free?</h3>
+        <p>
+          Yes, completely free. There is no sign-up, no account, and no usage limit. You can
+          count characters online as many times as you like at no cost, forever.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Does it count spaces as characters?</h3>
+        <p>
+          Yes — the main "Characters" stat counts spaces as characters, just like most platforms
+          do (Twitter/X, Instagram, SMS). If you need the count without spaces, use the "No Spaces"
+          stat shown right beside it.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What is the character limit for Twitter/X?</h3>
+        <p>
+          Standard Twitter/X posts allow up to 280 characters, including spaces and punctuation.
+          Verified users (Twitter Blue / X Premium) may have access to longer posts up to 25,000
+          characters, depending on their subscription tier.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What is the character limit for Instagram captions?</h3>
+        <p>
+          Instagram captions support up to 2,200 characters. However, only the first 125 characters
+          are shown before the "more" link, so aim to put your most important message within the
+          first 125 characters to maximise visibility in the feed.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>How many characters are in a page?</h3>
+        <p>
+          A standard manuscript page (double-spaced, 12pt Times New Roman, 1-inch margins) holds
+          roughly 1,800–2,000 characters including spaces, or about 250 words. A single-spaced page
+          can hold approximately 3,000–3,500 characters. These figures vary depending on font size,
+          line spacing, and margins.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; <span id="year"></span> softeditools.com — Free online character counter</p>
+  </footer>
+
+</div><!-- /container -->
+
+<script>
+  const input        = document.getElementById('text-input');
+  const clearBtn     = document.getElementById('clear-btn');
+  const charCountEl  = document.getElementById('char-count');
+  const charNoSpEl   = document.getElementById('char-no-space');
+  const letterEl     = document.getElementById('letter-count');
+  const numberEl     = document.getElementById('number-count');
+  const wordEl       = document.getElementById('word-count');
+  const lineEl       = document.getElementById('line-count');
+  const freqBodyEl   = document.getElementById('freq-body');
+
+  function mostFrequentChar(text) {
+    const filtered = text.replace(/ /g, '');
+    if (!filtered) return null;
+    const freq = Object.create(null);
+    for (const ch of filtered) {
+      freq[ch] = (freq[ch] || 0) + 1;
+    }
+    let best = null, bestCount = 0;
+    for (const [ch, count] of Object.entries(freq)) {
+      if (count > bestCount) { best = ch; bestCount = count; }
+    }
+    return best ? { char: best, count: bestCount } : null;
+  }
+
+  function renderFreq(result) {
+    if (!result) {
+      freqBodyEl.innerHTML = '<span class="freq-empty">Start typing to see the most frequent character…</span>';
+      return;
+    }
+    const display = result.char === '<' ? '&lt;' : result.char === '&' ? '&amp;' : result.char;
+    freqBodyEl.innerHTML =
+      '<span class="freq-char">' + display + '</span>' +
+      '<span class="freq-detail">appears <strong>' + result.count + '</strong> time' + (result.count !== 1 ? 's' : '') + '</span>';
+  }
+
+  function update() {
+    const text = input.value;
+
+    charCountEl.textContent = text.length.toLocaleString();
+    charNoSpEl.textContent  = text.replace(/\s/g, '').length.toLocaleString();
+    letterEl.textContent    = (text.match(/[a-zA-Z]/g) || []).length.toLocaleString();
+    numberEl.textContent    = (text.match(/[0-9]/g) || []).length.toLocaleString();
+
+    const trimmed = text.trim();
+    wordEl.textContent = trimmed ? trimmed.split(/\s+/).filter(Boolean).length.toLocaleString() : '0';
+    lineEl.textContent = trimmed ? text.split(/\n/).filter(l => l.trim().length > 0).length.toLocaleString() : '0';
+
+    renderFreq(mostFrequentChar(text));
+  }
+
+  input.addEventListener('input', update);
+
+  clearBtn.addEventListener('click', function () {
+    input.value = '';
+    update();
+    input.focus();
+  });
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  update();
+</script>
+
+</body>
+</html>
