@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Currency Converter — Free Online Exchange Rate Calculator</title>
+  <meta name="description" content="Free online currency converter. Get live exchange rates for USD, EUR, KRW, GBP, JPY and 150+ currencies. No sign-up required.">
+  <link rel="canonical" href="https://softeditools.com/currency-converter">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Currency Converter — Free Online Exchange Rate Calculator">
+  <meta property="og:description" content="Free online currency converter. Get live exchange rates for USD, EUR, KRW, GBP, JPY and 150+ currencies. No sign-up required.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://softeditools.com/currency-converter">
+
+  <meta name="robots" content="index, follow">
+
+  <!-- Schema Markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Currency Converter",
+    "url": "https://softeditools.com/currency-converter",
+    "description": "Free online currency converter. Get live exchange rates for USD, EUR, KRW, GBP, JPY and 150+ currencies. No sign-up required.",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent:       #0d9488;
+      --accent-dark:  #0f766e;
+      --accent-light: #f0fdfa;
+      --text:         #1e293b;
+      --muted:        #64748b;
+      --bg:           #ffffff;
+      --surface:      #f8fafc;
+      --border:       #e2e8f0;
+      --radius:       8px;
+      --font:         Inter, 'Segoe UI', Arial, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 16px;
+    }
+
+    .container {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 44px 0 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: var(--text);
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 560px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ── Ad slots ── */
+    .ad-slot {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px auto;
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: 4px;
+      color: var(--muted);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .ad-leaderboard { width: 728px; max-width: 100%; height: 90px; }
+    .ad-below       { width: 728px; max-width: 100%; height: 90px; }
+
+    @media (max-width: 600px) {
+      .ad-leaderboard,
+      .ad-below { width: 320px; height: 50px; }
+    }
+
+    /* ── Tool area ── */
+    .tool-area { margin: 8px 0 0; }
+
+    .converter-card {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+
+    /* ── Amount field ── */
+    .field-label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .amount-input {
+      width: 100%;
+      padding: 13px 16px;
+      font-family: var(--font);
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text);
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      outline: none;
+      transition: border-color 0.15s;
+      -moz-appearance: textfield;
+    }
+
+    .amount-input::-webkit-inner-spin-button,
+    .amount-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    .amount-input:focus { border-color: var(--accent); }
+
+    /* ── From / Swap / To row ── */
+    .from-to-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 12px;
+      align-items: end;
+      margin-top: 14px;
+    }
+
+    .currency-select {
+      width: 100%;
+      padding: 12px 36px 12px 14px;
+      font-family: var(--font);
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text);
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      transition: border-color 0.15s;
+    }
+
+    .currency-select:focus { border-color: var(--accent); }
+
+    .swap-col {
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .swap-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 46px;
+      height: 46px;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      background: var(--bg);
+      color: var(--accent);
+      font-size: 1.3rem;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, transform 0.25s;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .swap-btn:hover {
+      background: var(--accent-light);
+      border-color: var(--accent);
+      transform: rotate(180deg);
+    }
+
+    /* ── Result area ── */
+    .result-area {
+      margin-top: 24px;
+      padding-top: 22px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .result-inner { width: 100%; }
+
+    .result-main {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .result-number {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+
+    .result-unit {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .result-rate-line {
+      margin-top: 8px;
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+
+    .result-updated-line {
+      margin-top: 4px;
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+
+    .loading-text {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .error-box {
+      display: none;
+      padding: 12px 16px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: var(--radius);
+      color: #dc2626;
+      font-size: 0.9rem;
+      width: 100%;
+    }
+
+    /* ── Popular conversions ── */
+    .popular-section {
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+    }
+
+    .popular-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .popular-pairs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pair-btn {
+      padding: 7px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      font-family: var(--font);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+
+    .pair-btn:hover {
+      background: var(--accent-light);
+      border-color: var(--accent);
+      color: var(--accent-dark);
+    }
+
+    /* ── Content sections ── */
+    .content-section {
+      margin-top: 52px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .content-section h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      letter-spacing: -0.01em;
+    }
+
+    .content-section p {
+      color: var(--muted);
+      font-size: 0.96rem;
+      margin-bottom: 12px;
+    }
+
+    .content-section p:last-child { margin-bottom: 0; }
+
+    /* ── FAQ ── */
+    .faq-list { margin-top: 4px; }
+
+    .faq-item { margin-bottom: 26px; }
+
+    .faq-item:last-child { margin-bottom: 0; }
+
+    .faq-item h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .faq-item p {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: 56px;
+      padding: 24px 0 32px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 520px) {
+      h1 { font-size: 1.75rem; }
+      header { padding: 28px 0 16px; }
+      .converter-card { padding: 20px 16px; }
+      .result-number { font-size: 2.2rem; }
+      .result-unit { font-size: 1.1rem; }
+      .from-to-row {
+        grid-template-columns: 1fr;
+      }
+      .swap-col { justify-self: center; }
+    }
+  </style>
+
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6940565595128907" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>Currency Converter</h1>
+    <p class="subtitle">
+      Convert currency online instantly with live exchange rates. This free exchange rate calculator supports 150+ currencies — no sign-up required.
+    </p>
+  </header>
+
+  <!-- AdSense slot 1 -->
+  <div class="ad-slot ad-leaderboard"><!-- AdSense slot 1 --></div>
+
+  <main>
+    <div class="tool-area">
+
+      <div class="converter-card">
+
+        <label class="field-label" for="amount-input">Amount</label>
+        <input
+          type="number"
+          id="amount-input"
+          class="amount-input"
+          value="1"
+          min="0"
+          step="any"
+          placeholder="Enter amount"
+          aria-label="Amount to convert"
+        >
+
+        <div class="from-to-row">
+          <div>
+            <label class="field-label" for="from-select">From</label>
+            <select id="from-select" class="currency-select" aria-label="From currency"></select>
+          </div>
+          <div class="swap-col">
+            <button id="swap-btn" class="swap-btn" aria-label="Swap currencies" title="Swap currencies">⇄</button>
+          </div>
+          <div>
+            <label class="field-label" for="to-select">To</label>
+            <select id="to-select" class="currency-select" aria-label="To currency"></select>
+          </div>
+        </div>
+
+        <div class="result-area" id="result-area">
+          <p class="loading-text" id="loading-msg">Loading exchange rates…</p>
+          <div class="result-inner" id="result-display" style="display:none;">
+            <div class="result-main">
+              <span class="result-number" id="result-number">—</span>
+              <span class="result-unit" id="result-unit">EUR</span>
+            </div>
+            <p class="result-rate-line" id="result-rate-line"></p>
+            <p class="result-updated-line" id="result-updated-line"></p>
+          </div>
+          <div class="error-box" id="error-box">
+            Exchange rates temporarily unavailable. Please try again shortly.
+          </div>
+        </div>
+
+        <div class="popular-section">
+          <p class="popular-label">Popular conversions</p>
+          <div class="popular-pairs">
+            <button class="pair-btn" data-from="USD" data-to="EUR">USD → EUR</button>
+            <button class="pair-btn" data-from="USD" data-to="KRW">USD → KRW</button>
+            <button class="pair-btn" data-from="USD" data-to="GBP">USD → GBP</button>
+            <button class="pair-btn" data-from="USD" data-to="JPY">USD → JPY</button>
+            <button class="pair-btn" data-from="EUR" data-to="USD">EUR → USD</button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- AdSense slot 2 -->
+  <div class="ad-slot ad-below"><!-- AdSense slot 2 --></div>
+
+  <section class="content-section" aria-labelledby="how-heading">
+    <h2 id="how-heading">How to use this currency converter</h2>
+    <p>
+      Enter any amount in the field above, then select your source currency from the "From" dropdown and your target currency from the "To" dropdown. The converted result updates instantly as you type — no button click needed.
+    </p>
+    <p>
+      Use the ⇄ swap button between the dropdowns to instantly reverse the conversion direction. For the most common pairs, click any button in the "Popular conversions" row to auto-fill both dropdowns in one tap.
+    </p>
+    <p>
+      Rates are fetched live from ExchangeRate-API each time you load the page and cached for the duration of your session. The "Rates updated" timestamp below the result shows exactly when the data was last refreshed.
+    </p>
+  </section>
+
+  <section class="content-section" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <h3>How accurate are the exchange rates?</h3>
+        <p>
+          Rates are sourced from ExchangeRate-API, which aggregates data from central banks and financial data providers. The values closely track mid-market rates and are suitable for informational use. For actual financial transactions, check with your bank or broker — they apply their own spreads and fees on top of the mid-market rate.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>How often are exchange rates updated?</h3>
+        <p>
+          On the free tier, ExchangeRate-API refreshes rates once every 24 hours. Rates are fetched fresh each time you load this page. The "Rates updated" note below the result shows the exact date the data was last published.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Is this currency converter free?</h3>
+        <p>
+          Yes, completely free. No sign-up, no account, and no usage limit. Convert as many currencies as you need, as often as you like, at no cost.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What currencies are supported?</h3>
+        <p>
+          This converter supports over 150 world currencies, including all major fiat currencies: USD, EUR, GBP, JPY, CAD, AUD, CNY, KRW, SGD, HKD, CHF, INR, BRL, MXN, and many more. The full list is available in the dropdowns above.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What is the exchange rate for USD to KRW today?</h3>
+        <p>
+          The USD to KRW rate changes daily. Select USD as the source currency and KRW as the target above to see the current live rate. Historically, 1 USD has traded between roughly 1,200 and 1,450 Korean Won depending on economic conditions and Bank of Korea policy.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What is the exchange rate for USD to EUR today?</h3>
+        <p>
+          Select USD as the source currency and EUR as the target above to see today's live rate. Historically, 1 USD has traded between about 0.85 and 1.00 Euro, with the rate fluctuating based on Federal Reserve and ECB monetary policy decisions.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; <span id="year"></span> softeditools.com — Free online currency converter</p>
+  </footer>
+
+</div><!-- /container -->
+
+<script src="config.js"></script>
+<script>
+  var CURRENCIES = [
+    { code: 'USD', name: 'US Dollar' },
+    { code: 'EUR', name: 'Euro' },
+    { code: 'KRW', name: 'South Korean Won' },
+    { code: 'GBP', name: 'British Pound' },
+    { code: 'JPY', name: 'Japanese Yen' },
+    { code: 'CAD', name: 'Canadian Dollar' },
+    { code: 'AUD', name: 'Australian Dollar' },
+    { code: 'CNY', name: 'Chinese Yuan' },
+    { code: 'SGD', name: 'Singapore Dollar' },
+    { code: 'HKD', name: 'Hong Kong Dollar' },
+    { code: 'AED', name: 'UAE Dirham' },
+    { code: 'AFN', name: 'Afghan Afghani' },
+    { code: 'ALL', name: 'Albanian Lek' },
+    { code: 'AMD', name: 'Armenian Dram' },
+    { code: 'ANG', name: 'Netherlands Antillean Guilder' },
+    { code: 'AOA', name: 'Angolan Kwanza' },
+    { code: 'ARS', name: 'Argentine Peso' },
+    { code: 'AWG', name: 'Aruban Florin' },
+    { code: 'AZN', name: 'Azerbaijani Manat' },
+    { code: 'BAM', name: 'Bosnian Mark' },
+    { code: 'BBD', name: 'Barbadian Dollar' },
+    { code: 'BDT', name: 'Bangladeshi Taka' },
+    { code: 'BGN', name: 'Bulgarian Lev' },
+    { code: 'BHD', name: 'Bahraini Dinar' },
+    { code: 'BND', name: 'Brunei Dollar' },
+    { code: 'BOB', name: 'Bolivian Boliviano' },
+    { code: 'BRL', name: 'Brazilian Real' },
+    { code: 'BSD', name: 'Bahamian Dollar' },
+    { code: 'BWP', name: 'Botswana Pula' },
+    { code: 'BYN', name: 'Belarusian Ruble' },
+    { code: 'BZD', name: 'Belize Dollar' },
+    { code: 'CHF', name: 'Swiss Franc' },
+    { code: 'CLP', name: 'Chilean Peso' },
+    { code: 'COP', name: 'Colombian Peso' },
+    { code: 'CRC', name: 'Costa Rican Colon' },
+    { code: 'CZK', name: 'Czech Koruna' },
+    { code: 'DKK', name: 'Danish Krone' },
+    { code: 'DOP', name: 'Dominican Peso' },
+    { code: 'DZD', name: 'Algerian Dinar' },
+    { code: 'EGP', name: 'Egyptian Pound' },
+    { code: 'ETB', name: 'Ethiopian Birr' },
+    { code: 'FJD', name: 'Fijian Dollar' },
+    { code: 'GEL', name: 'Georgian Lari' },
+    { code: 'GHS', name: 'Ghanaian Cedi' },
+    { code: 'GTQ', name: 'Guatemalan Quetzal' },
+    { code: 'HNL', name: 'Honduran Lempira' },
+    { code: 'HRK', name: 'Croatian Kuna' },
+    { code: 'HUF', name: 'Hungarian Forint' },
+    { code: 'IDR', name: 'Indonesian Rupiah' },
+    { code: 'ILS', name: 'Israeli Shekel' },
+    { code: 'INR', name: 'Indian Rupee' },
+    { code: 'IQD', name: 'Iraqi Dinar' },
+    { code: 'IRR', name: 'Iranian Rial' },
+    { code: 'ISK', name: 'Icelandic Krona' },
+    { code: 'JMD', name: 'Jamaican Dollar' },
+    { code: 'JOD', name: 'Jordanian Dinar' },
+    { code: 'KES', name: 'Kenyan Shilling' },
+    { code: 'KGS', name: 'Kyrgyz Som' },
+    { code: 'KHR', name: 'Cambodian Riel' },
+    { code: 'KWD', name: 'Kuwaiti Dinar' },
+    { code: 'KYD', name: 'Cayman Islands Dollar' },
+    { code: 'KZT', name: 'Kazakhstani Tenge' },
+    { code: 'LBP', name: 'Lebanese Pound' },
+    { code: 'LKR', name: 'Sri Lankan Rupee' },
+    { code: 'LYD', name: 'Libyan Dinar' },
+    { code: 'MAD', name: 'Moroccan Dirham' },
+    { code: 'MDL', name: 'Moldovan Leu' },
+    { code: 'MKD', name: 'Macedonian Denar' },
+    { code: 'MMK', name: 'Myanmar Kyat' },
+    { code: 'MNT', name: 'Mongolian Tugrik' },
+    { code: 'MOP', name: 'Macanese Pataca' },
+    { code: 'MUR', name: 'Mauritian Rupee' },
+    { code: 'MVR', name: 'Maldivian Rufiyaa' },
+    { code: 'MXN', name: 'Mexican Peso' },
+    { code: 'MYR', name: 'Malaysian Ringgit' },
+    { code: 'MZN', name: 'Mozambican Metical' },
+    { code: 'NAD', name: 'Namibian Dollar' },
+    { code: 'NGN', name: 'Nigerian Naira' },
+    { code: 'NIO', name: 'Nicaraguan Cordoba' },
+    { code: 'NOK', name: 'Norwegian Krone' },
+    { code: 'NPR', name: 'Nepalese Rupee' },
+    { code: 'NZD', name: 'New Zealand Dollar' },
+    { code: 'OMR', name: 'Omani Rial' },
+    { code: 'PAB', name: 'Panamanian Balboa' },
+    { code: 'PEN', name: 'Peruvian Sol' },
+    { code: 'PHP', name: 'Philippine Peso' },
+    { code: 'PKR', name: 'Pakistani Rupee' },
+    { code: 'PLN', name: 'Polish Zloty' },
+    { code: 'PYG', name: 'Paraguayan Guarani' },
+    { code: 'QAR', name: 'Qatari Rial' },
+    { code: 'RON', name: 'Romanian Leu' },
+    { code: 'RSD', name: 'Serbian Dinar' },
+    { code: 'RUB', name: 'Russian Ruble' },
+    { code: 'RWF', name: 'Rwandan Franc' },
+    { code: 'SAR', name: 'Saudi Riyal' },
+    { code: 'SEK', name: 'Swedish Krona' },
+    { code: 'SOS', name: 'Somali Shilling' },
+    { code: 'SRD', name: 'Surinamese Dollar' },
+    { code: 'SZL', name: 'Swazi Lilangeni' },
+    { code: 'THB', name: 'Thai Baht' },
+    { code: 'TJS', name: 'Tajikistani Somoni' },
+    { code: 'TMT', name: 'Turkmenistani Manat' },
+    { code: 'TND', name: 'Tunisian Dinar' },
+    { code: 'TRY', name: 'Turkish Lira' },
+    { code: 'TTD', name: 'Trinidad and Tobago Dollar' },
+    { code: 'TWD', name: 'New Taiwan Dollar' },
+    { code: 'TZS', name: 'Tanzanian Shilling' },
+    { code: 'UAH', name: 'Ukrainian Hryvnia' },
+    { code: 'UGX', name: 'Ugandan Shilling' },
+    { code: 'UYU', name: 'Uruguayan Peso' },
+    { code: 'UZS', name: 'Uzbekistani Som' },
+    { code: 'VND', name: 'Vietnamese Dong' },
+    { code: 'XAF', name: 'Central African CFA Franc' },
+    { code: 'XCD', name: 'East Caribbean Dollar' },
+    { code: 'XOF', name: 'West African CFA Franc' },
+    { code: 'YER', name: 'Yemeni Rial' },
+    { code: 'ZAR', name: 'South African Rand' },
+    { code: 'ZMW', name: 'Zambian Kwacha' }
+  ];
+
+  var API_KEY = (typeof window.CURRENCY_API_KEY === 'string') ? window.CURRENCY_API_KEY : '';
+  var API_URL = 'https://v6.exchangerate-api.com/v6/' + API_KEY + '/latest/USD';
+
+  var rates        = null;
+  var ratesDateStr = null;
+
+  var amountInput    = document.getElementById('amount-input');
+  var fromSelect     = document.getElementById('from-select');
+  var toSelect       = document.getElementById('to-select');
+  var swapBtn        = document.getElementById('swap-btn');
+  var resultNumber   = document.getElementById('result-number');
+  var resultUnit     = document.getElementById('result-unit');
+  var resultRateLine = document.getElementById('result-rate-line');
+  var resultUpdated  = document.getElementById('result-updated-line');
+  var resultDisplay  = document.getElementById('result-display');
+  var loadingMsg     = document.getElementById('loading-msg');
+  var errorBox       = document.getElementById('error-box');
+
+  function buildOptions(el, defaultCode) {
+    el.innerHTML = '';
+    CURRENCIES.forEach(function(c) {
+      var opt = document.createElement('option');
+      opt.value = c.code;
+      opt.textContent = c.code + ' — ' + c.name;
+      if (c.code === defaultCode) opt.selected = true;
+      el.appendChild(opt);
+    });
+  }
+
+  function fmt(n) {
+    if (isNaN(n) || n === null) return '—';
+    if (n >= 1000)  return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (n >= 1)     return n.toFixed(4);
+    if (n >= 0.001) return n.toFixed(6);
+    return n.toFixed(8);
+  }
+
+  function convert() {
+    if (!rates) return;
+
+    var amount = parseFloat(amountInput.value);
+    var from   = fromSelect.value;
+    var to     = toSelect.value;
+
+    resultUnit.textContent = to;
+
+    if (isNaN(amount) || amount < 0) {
+      resultNumber.textContent   = '—';
+      resultRateLine.textContent = '';
+      return;
+    }
+
+    var rateFrom = rates[from] || null;
+    var rateTo   = rates[to]   || null;
+
+    if (!rateFrom || !rateTo) {
+      resultNumber.textContent = '—';
+      return;
+    }
+
+    var result   = amount * (rateTo / rateFrom);
+    var unitRate = rateTo / rateFrom;
+
+    resultNumber.textContent   = fmt(result);
+    resultRateLine.textContent = '1 ' + from + ' = ' + fmt(unitRate) + ' ' + to;
+
+    if (ratesDateStr) {
+      resultUpdated.textContent = 'Rates updated: ' + ratesDateStr;
+    }
+  }
+
+  function fetchRates() {
+    fetch(API_URL)
+      .then(function(res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function(data) {
+        if (data.result !== 'success') throw new Error(data['error-type'] || 'API error');
+
+        rates = data.conversion_rates;
+        if (!rates['USD']) rates['USD'] = 1;
+
+        var tsStr = data.time_last_update_utc || '';
+        if (tsStr) {
+          var d = new Date(tsStr);
+          ratesDateStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        } else {
+          ratesDateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        loadingMsg.style.display    = 'none';
+        resultDisplay.style.display = '';
+        errorBox.style.display      = 'none';
+        convert();
+      })
+      .catch(function(err) {
+        console.error('Failed to fetch exchange rates:', err);
+        loadingMsg.style.display    = 'none';
+        errorBox.style.display      = '';
+        resultDisplay.style.display = 'none';
+      });
+  }
+
+  buildOptions(fromSelect, 'USD');
+  buildOptions(toSelect,   'EUR');
+
+  amountInput.addEventListener('input', convert);
+  fromSelect.addEventListener('change', convert);
+  toSelect.addEventListener('change', convert);
+
+  swapBtn.addEventListener('click', function() {
+    var tmp = fromSelect.value;
+    fromSelect.value = toSelect.value;
+    toSelect.value   = tmp;
+    convert();
+  });
+
+  document.querySelectorAll('.pair-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      fromSelect.value = btn.dataset.from;
+      toSelect.value   = btn.dataset.to;
+      convert();
+    });
+  });
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  fetchRates();
+</script>
+
+</body>
+</html>
