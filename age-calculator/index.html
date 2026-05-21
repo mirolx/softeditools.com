@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Age Calculator — Calculate Your Exact Age Online Free</title>
+  <meta name="description" content="Free online age calculator. Find your exact age in years, months, days, hours, and minutes. Includes next birthday countdown and zodiac sign.">
+  <link rel="canonical" href="https://softeditools.com/age-calculator">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Age Calculator — Calculate Your Exact Age Online Free">
+  <meta property="og:description" content="Free online age calculator. Find your exact age in years, months, days, hours, and minutes. Includes next birthday countdown and zodiac sign.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://softeditools.com/age-calculator">
+
+  <meta name="robots" content="index, follow">
+
+  <!-- Schema Markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Age Calculator",
+    "url": "https://softeditools.com/age-calculator",
+    "description": "Free online age calculator. Find your exact age in years, months, days, hours, and minutes. Includes next birthday countdown and zodiac sign.",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent:       #0d9488;
+      --accent-dark:  #0f766e;
+      --accent-light: #f0fdfa;
+      --text:         #1e293b;
+      --muted:        #64748b;
+      --bg:           #ffffff;
+      --surface:      #f8fafc;
+      --border:       #e2e8f0;
+      --radius:       8px;
+      --font:         Inter, 'Segoe UI', Arial, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 16px;
+    }
+
+    .container {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 44px 0 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: var(--text);
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 560px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ── Ad slots ── */
+    .ad-slot {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px auto;
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: 4px;
+      color: var(--muted);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .ad-leaderboard { width: 728px; max-width: 100%; height: 90px; }
+    .ad-below       { width: 728px; max-width: 100%; height: 90px; }
+
+    @media (max-width: 600px) {
+      .ad-leaderboard,
+      .ad-below { width: 320px; height: 50px; }
+    }
+
+    /* ── Tool area ── */
+    .tool-area { margin: 8px 0 0; }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    @media (max-width: 560px) {
+      .input-row { grid-template-columns: 1fr; }
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .input-group label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .input-group input[type="date"] {
+      width: 100%;
+      padding: 12px 14px;
+      font-family: var(--font);
+      font-size: 1rem;
+      color: var(--text);
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      outline: none;
+      transition: border-color 0.15s;
+      cursor: pointer;
+    }
+
+    .input-group input[type="date"]:focus {
+      border-color: var(--accent);
+    }
+
+    #calc-btn {
+      display: block;
+      width: 100%;
+      margin-top: 16px;
+      padding: 13px 32px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-family: var(--font);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      letter-spacing: 0.01em;
+    }
+
+    #calc-btn:hover { background: var(--accent-dark); }
+
+    .error-msg {
+      display: none;
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      border-radius: var(--radius);
+      color: #dc2626;
+      font-size: 0.9rem;
+    }
+
+    .error-msg.visible { display: block; }
+
+    /* ── Results ── */
+    #results {
+      display: none;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      margin-top: 24px;
+    }
+
+    #results.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Stats grid ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    @media (max-width: 640px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 340px) {
+      .stats-grid { grid-template-columns: 1fr; }
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 14px 18px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: clamp(1.45rem, 3.2vw, 2.1rem);
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
+
+    .stat-sub {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 5px;
+      font-weight: 500;
+    }
+
+    /* ── Fun facts card ── */
+    .fun-facts-card {
+      margin-top: 14px;
+      background: var(--accent-light);
+      border: 1px solid #99f6e4;
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px 28px;
+    }
+
+    @media (max-width: 480px) {
+      .fun-facts-card { grid-template-columns: 1fr; gap: 14px; }
+    }
+
+    .fun-fact { display: flex; flex-direction: column; gap: 4px; }
+
+    .fun-fact-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      font-weight: 600;
+      color: var(--accent-dark);
+    }
+
+    .fun-fact-value {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .fun-fact-value.is-today { color: var(--accent); }
+
+    /* ── Content sections ── */
+    .content-section {
+      margin-top: 52px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .content-section h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      letter-spacing: -0.01em;
+    }
+
+    .content-section p {
+      color: var(--muted);
+      font-size: 0.96rem;
+      margin-bottom: 12px;
+    }
+
+    .content-section p:last-child { margin-bottom: 0; }
+
+    /* ── FAQ ── */
+    .faq-list { margin-top: 4px; }
+
+    .faq-item { margin-bottom: 26px; }
+
+    .faq-item:last-child { margin-bottom: 0; }
+
+    .faq-item h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .faq-item p {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: 56px;
+      padding: 24px 0 32px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    /* ── Mobile tweaks ── */
+    @media (max-width: 480px) {
+      h1 { font-size: 1.75rem; }
+      header { padding: 28px 0 16px; }
+    }
+  </style>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6940565595128907" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>Age Calculator</h1>
+    <p class="subtitle">
+      Use this free age calculator to calculate your age online — get your exact age in years,
+      months, days, hours, and minutes, plus your next birthday countdown and zodiac sign.
+    </p>
+  </header>
+
+  <!-- AdSense slot 1 -->
+  <div class="ad-slot ad-leaderboard"><!-- AdSense slot 1 --></div>
+
+  <main>
+    <div class="tool-area">
+
+      <div class="input-row">
+        <div class="input-group">
+          <label for="dob">Date of Birth</label>
+          <input type="date" id="dob" aria-label="Date of birth">
+        </div>
+        <div class="input-group">
+          <label for="calc-date">Calculate Age As Of</label>
+          <input type="date" id="calc-date" aria-label="Calculate age as of this date">
+        </div>
+      </div>
+
+      <button id="calc-btn" type="button">Calculate Age</button>
+
+      <div class="error-msg" id="error-msg" role="alert" aria-live="polite"></div>
+
+      <div id="results" role="region" aria-label="Age calculation results">
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="stat-years">—</div>
+            <div class="stat-label">Years Old</div>
+            <div class="stat-sub" id="stat-ymd"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-total-months">—</div>
+            <div class="stat-label">Total Months</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-total-weeks">—</div>
+            <div class="stat-label">Total Weeks</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-total-days">—</div>
+            <div class="stat-label">Total Days</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-total-hours">—</div>
+            <div class="stat-label">Total Hours</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-total-minutes">—</div>
+            <div class="stat-label">Total Minutes</div>
+          </div>
+        </div>
+
+        <div class="fun-facts-card">
+          <div class="fun-fact">
+            <span class="fun-fact-label">Next Birthday</span>
+            <span class="fun-fact-value" id="ff-next-bday"></span>
+          </div>
+          <div class="fun-fact">
+            <span class="fun-fact-label">Day of Birth</span>
+            <span class="fun-fact-value" id="ff-birth-day"></span>
+          </div>
+          <div class="fun-fact">
+            <span class="fun-fact-label">Zodiac Sign</span>
+            <span class="fun-fact-value" id="ff-zodiac"></span>
+          </div>
+          <div class="fun-fact">
+            <span class="fun-fact-label">Chinese Zodiac</span>
+            <span class="fun-fact-value" id="ff-chinese"></span>
+          </div>
+        </div>
+
+      </div><!-- /results -->
+
+    </div><!-- /tool-area -->
+  </main>
+
+  <!-- AdSense slot 2 -->
+  <div class="ad-slot ad-below"><!-- AdSense slot 2 --></div>
+
+  <section class="content-section" aria-labelledby="how-heading">
+    <h2 id="how-heading">How to use this age calculator</h2>
+    <p>
+      Enter your date of birth in the first field, then confirm the date you want to calculate
+      your age as of in the second field — it defaults to today so you can see your current age
+      right away. Click <strong>Calculate Age</strong> and your results appear instantly below.
+    </p>
+    <p>
+      Your age is broken down six ways: exact years, total months elapsed, total weeks, total
+      days, total hours, and total minutes. The teal panel below the stats shows your next
+      birthday countdown, the day of the week you were born, your Western zodiac sign, and your
+      Chinese zodiac animal year.
+    </p>
+    <p>
+      Everything runs entirely inside your browser — no data is sent to any server and nothing is
+      stored or tracked. You can also calculate the time between any two dates by adjusting the
+      "Calculate Age As Of" field to any date, past or future.
+    </p>
+  </section>
+
+  <section class="content-section" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <h3>How do I calculate my exact age?</h3>
+        <p>
+          Enter your date of birth above and click Calculate Age. The tool computes your precise age
+          in years, months, and days — not a rough estimate. It accounts for leap years and the
+          varying number of days in each month so the result is always accurate to the day.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>How many days old am I?</h3>
+        <p>
+          After calculating, the "Total Days" card shows exactly how many days you have been alive.
+          For someone who just turned 30, this is typically around 10,957 days, though the exact
+          number depends on how many leap years fall within their lifetime.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What day of the week was I born?</h3>
+        <p>
+          Enter your date of birth and click Calculate. The "Day of Birth" field in the teal panel
+          will tell you the exact day of the week — for example, "You were born on a Wednesday."
+          This works for any date going back centuries.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>How do I calculate age between two dates?</h3>
+        <p>
+          Enter the earlier date in the "Date of Birth" field and the later date in the "Calculate
+          Age As Of" field, then click Calculate. This works for any two dates — not just birth
+          dates — making it useful for calculating how long ago any event occurred.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What is my zodiac sign?</h3>
+        <p>
+          Your Western zodiac sign is determined by your birth month and day. The twelve signs are:
+          Aries (Mar 21 – Apr 19), Taurus (Apr 20 – May 20), Gemini (May 21 – Jun 20), Cancer
+          (Jun 21 – Jul 22), Leo (Jul 23 – Aug 22), Virgo (Aug 23 – Sep 22), Libra (Sep 23 –
+          Oct 22), Scorpio (Oct 23 – Nov 21), Sagittarius (Nov 22 – Dec 21), Capricorn (Dec 22 –
+          Jan 19), Aquarius (Jan 20 – Feb 18), and Pisces (Feb 19 – Mar 20).
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Is this age calculator free?</h3>
+        <p>
+          Yes, completely free. There is no sign-up, no account, and no usage limit. You can
+          calculate your age online as many times as you like at no cost, on any device.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; <span id="year"></span> softeditools.com — Free online age calculator</p>
+  </footer>
+
+</div><!-- /container -->
+
+<script>
+  const dobInput   = document.getElementById('dob');
+  const calcInput  = document.getElementById('calc-date');
+  const calcBtn    = document.getElementById('calc-btn');
+  const errorMsg   = document.getElementById('error-msg');
+  const resultsDiv = document.getElementById('results');
+
+  // Default calc-date to today
+  (function () {
+    const t = new Date();
+    calcInput.value = t.getFullYear() + '-' +
+      String(t.getMonth() + 1).padStart(2, '0') + '-' +
+      String(t.getDate()).padStart(2, '0');
+  })();
+
+  function parseDate(str) {
+    const [y, m, d] = str.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  }
+
+  function fmt(n) {
+    return n.toLocaleString();
+  }
+
+  function getZodiac(m, d) {
+    if ((m === 3 && d >= 21) || (m === 4 && d <= 19))  return 'Aries ♈';
+    if ((m === 4 && d >= 20) || (m === 5 && d <= 20))  return 'Taurus ♉';
+    if ((m === 5 && d >= 21) || (m === 6 && d <= 20))  return 'Gemini ♊';
+    if ((m === 6 && d >= 21) || (m === 7 && d <= 22))  return 'Cancer ♋';
+    if ((m === 7 && d >= 23) || (m === 8 && d <= 22))  return 'Leo ♌';
+    if ((m === 8 && d >= 23) || (m === 9 && d <= 22))  return 'Virgo ♍';
+    if ((m === 9 && d >= 23) || (m === 10 && d <= 22)) return 'Libra ♎';
+    if ((m === 10 && d >= 23) || (m === 11 && d <= 21)) return 'Scorpio ♏';
+    if ((m === 11 && d >= 22) || (m === 12 && d <= 21)) return 'Sagittarius ♐';
+    if ((m === 12 && d >= 22) || (m === 1 && d <= 19)) return 'Capricorn ♑';
+    if ((m === 1 && d >= 20) || (m === 2 && d <= 18))  return 'Aquarius ♒';
+    return 'Pisces ♓';
+  }
+
+  // year % 12 → index: 0=Monkey 1=Rooster 2=Dog 3=Pig 4=Rat 5=Ox 6=Tiger 7=Rabbit 8=Dragon 9=Snake 10=Horse 11=Goat
+  const CHINESE = ['Monkey', 'Rooster', 'Dog', 'Pig', 'Rat', 'Ox', 'Tiger', 'Rabbit', 'Dragon', 'Snake', 'Horse', 'Goat'];
+
+  function getChineseZodiac(year) {
+    return 'Year of the ' + CHINESE[year % 12];
+  }
+
+  const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+  function showError(msg) {
+    errorMsg.textContent = msg;
+    errorMsg.classList.add('visible');
+  }
+
+  function hideError() {
+    errorMsg.classList.remove('visible');
+  }
+
+  function calculate() {
+    const dobStr  = dobInput.value;
+    const calcStr = calcInput.value;
+
+    if (!dobStr || !calcStr) {
+      showError('Please fill in both date fields.');
+      return;
+    }
+
+    const dob  = parseDate(dobStr);
+    const asOf = parseDate(calcStr);
+
+    if (dob > asOf) {
+      showError('The date of birth must not be later than the "Calculate Age As Of" date.');
+      return;
+    }
+
+    hideError();
+
+    // Exact age: years, months, days
+    let years  = asOf.getFullYear() - dob.getFullYear();
+    let months = asOf.getMonth()    - dob.getMonth();
+    let days   = asOf.getDate()     - dob.getDate();
+
+    if (days < 0) {
+      months--;
+      days += new Date(asOf.getFullYear(), asOf.getMonth(), 0).getDate();
+    }
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+
+    // Totals
+    const MS_DAY      = 86400000;
+    const totalDays   = Math.floor((asOf - dob) / MS_DAY);
+    const totalWeeks  = Math.floor(totalDays / 7);
+    const totalMonths = years * 12 + months;
+    const totalHours  = totalDays * 24;
+    const totalMins   = totalHours * 60;
+
+    // Stat cards
+    document.getElementById('stat-years').textContent        = fmt(years);
+    document.getElementById('stat-ymd').textContent          =
+      months + ' month' + (months !== 1 ? 's' : '') + ', ' +
+      days   + ' day'   + (days   !== 1 ? 's' : '');
+    document.getElementById('stat-total-months').textContent  = fmt(totalMonths);
+    document.getElementById('stat-total-weeks').textContent   = fmt(totalWeeks);
+    document.getElementById('stat-total-days').textContent    = fmt(totalDays);
+    document.getElementById('stat-total-hours').textContent   = fmt(totalHours);
+    document.getElementById('stat-total-minutes').textContent = fmt(totalMins);
+
+    // Next birthday
+    const bdayThisYear = new Date(asOf.getFullYear(), dob.getMonth(), dob.getDate());
+    const nextBdayEl   = document.getElementById('ff-next-bday');
+
+    if (bdayThisYear.getTime() === asOf.getTime()) {
+      nextBdayEl.textContent = 'Today — Happy Birthday!';
+      nextBdayEl.className = 'fun-fact-value is-today';
+    } else {
+      if (bdayThisYear < asOf) {
+        bdayThisYear.setFullYear(asOf.getFullYear() + 1);
+      }
+      const daysUntil = Math.ceil((bdayThisYear - asOf) / MS_DAY);
+      nextBdayEl.textContent = 'In ' + fmt(daysUntil) + ' day' + (daysUntil !== 1 ? 's' : '');
+      nextBdayEl.className = 'fun-fact-value';
+    }
+
+    // Day of week
+    document.getElementById('ff-birth-day').textContent = 'You were born on a ' + DAY_NAMES[dob.getDay()];
+
+    // Zodiac
+    document.getElementById('ff-zodiac').textContent  = getZodiac(dob.getMonth() + 1, dob.getDate());
+    document.getElementById('ff-chinese').textContent = getChineseZodiac(dob.getFullYear());
+
+    // Animate results in
+    resultsDiv.style.display = 'block';
+    resultsDiv.getBoundingClientRect(); // force reflow
+    resultsDiv.classList.add('visible');
+  }
+
+  calcBtn.addEventListener('click', calculate);
+  dobInput.addEventListener('keydown',  function (e) { if (e.key === 'Enter') calculate(); });
+  calcInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') calculate(); });
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
