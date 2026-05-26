@@ -1,57 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://softeditools.com/</loc>
+    <loc>https://www.softeditools.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://softeditools.com/word-counter/</loc>
+    <loc>https://www.softeditools.com/word-counter/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://softeditools.com/character-counter/</loc>
+    <loc>https://www.softeditools.com/character-counter/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://softeditools.com/case-converter/</loc>
+    <loc>https://www.softeditools.com/case-converter/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://softeditools.com/lorem-ipsum-generator/</loc>
+    <loc>https://www.softeditools.com/lorem-ipsum-generator/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://softeditools.com/currency-converter/</loc>
+    <loc>https://www.softeditools.com/currency-converter/</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://softeditools.com/password-generator/</loc>
+    <loc>https://www.softeditools.com/password-generator/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://softeditools.com/calculator/</loc>
+    <loc>https://www.softeditools.com/calculator/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://softeditools.com/scientific-calculator/</loc>
+    <loc>https://www.softeditools.com/scientific-calculator/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://softeditools.com/unit-converter/</loc>
+    <loc>https://www.softeditools.com/unit-converter/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://softeditools.com/age-calculator/</loc>
+    <loc>https://www.softeditools.com/age-calculator/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
