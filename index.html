@@ -227,6 +227,29 @@
       letter-spacing: 0.02em;
     }
 
+    .footer-blog-link {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .footer-blog-link:hover { color: var(--accent); }
+
+    .badge-new {
+      display: inline-block;
+      background: #16a34a;
+      color: #ffffff;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 1px 6px;
+      border-radius: 99px;
+      vertical-align: middle;
+      margin-left: 5px;
+      line-height: 1.6;
+    }
+
     /* ── Mobile header ── */
     @media (max-width: 480px) {
       header { padding: 48px 0 36px; }
@@ -346,7 +369,7 @@
   </main>
 
   <footer>
-    <p>&copy; 2026 SoftEdit Tools &middot; Free online tools</p>
+    <p>&copy; 2026 SoftEdit Tools &middot; Free online tools &middot; <a class="footer-blog-link" href="/blog/">Blog<span class="badge-new">New</span></a></p>
   </footer>
 
 </div>

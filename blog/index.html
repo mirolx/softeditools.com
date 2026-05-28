@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — SoftEdit Tools</title>
+  <meta name="description" content="Practical guides on writing, passwords, unit conversion, and more — from the SoftEdit Tools team.">
+  <link rel="canonical" href="https://www.softeditools.com/blog/">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Blog — SoftEdit Tools">
+  <meta property="og:description" content="Practical guides on writing, passwords, unit conversion, and more — from the SoftEdit Tools team.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.softeditools.com/blog/">
+
+  <meta name="robots" content="index, follow">
+
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6940565595128907" crossorigin="anonymous"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #ffffff;
+      --text:        #1e293b;
+      --accent:      #0d9488;
+      --accent-dark: #0f766e;
+      --muted:       #64748b;
+      --card-bg:     #ffffff;
+      --surface:     #f8fafc;
+      --border:      #e2e8f0;
+      --serif:       Georgia, Cambria, 'Times New Roman', serif;
+      --sans:        Inter, 'Segoe UI', Arial, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 16px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Container ── */
+    .container {
+      max-width: 1020px;
+      margin: 0 auto;
+      padding: 0 28px;
+      width: 100%;
+    }
+
+    /* ── Back link ── */
+    .back-wrap {
+      padding: 28px 0 0;
+    }
+
+    .back-link {
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.01em;
+      transition: color 0.15s;
+    }
+
+    .back-link:hover { color: var(--accent); }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      padding: 52px 0 48px;
+    }
+
+    .site-name {
+      font-family: var(--serif);
+      font-size: 2.5rem;
+      font-weight: normal;
+      color: var(--text);
+      letter-spacing: 0.01em;
+      text-decoration: none;
+    }
+
+    .tagline {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      font-style: italic;
+    }
+
+    .header-rule {
+      width: 48px;
+      height: 1px;
+      background: var(--border);
+      margin: 32px auto 0;
+    }
+
+    /* ── Main ── */
+    main { flex: 1; }
+
+    .blog-section {
+      padding-bottom: 80px;
+    }
+
+    .section-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 28px;
+    }
+
+    /* ── Grid ── */
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    @media (max-width: 780px) {
+      .blog-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 480px) {
+      .blog-grid { grid-template-columns: 1fr; }
+      header { padding: 36px 0 32px; }
+      .site-name { font-size: 1.9rem; }
+    }
+
+    /* ── Card ── */
+    .blog-card {
+      position: relative;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 28px 26px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: box-shadow 0.22s ease, transform 0.22s ease;
+    }
+
+    .blog-card:hover {
+      box-shadow: 0 6px 24px rgba(44, 44, 42, 0.07);
+      transform: translateY(-3px);
+    }
+
+    .card-name {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    .card-name a::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 10px;
+    }
+
+    .card-name a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .card-desc {
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.55;
+      flex: 1;
+    }
+
+    .card-cta {
+      display: inline-block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.01em;
+      margin-top: 6px;
+      position: relative;
+      z-index: 1;
+      transition: color 0.15s;
+    }
+
+    .blog-card:hover .card-cta { color: var(--accent-dark); }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 32px 0 44px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.82rem;
+      letter-spacing: 0.02em;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="back-wrap">
+    <a class="back-link" href="/">&larr; Back to all tools</a>
+  </div>
+
+  <header>
+    <a class="site-name" href="/">SoftEdit Tools</a>
+    <p class="tagline">simple tools, softly made</p>
+    <div class="header-rule"></div>
+  </header>
+
+  <main>
+    <section class="blog-section" aria-labelledby="blog-label">
+      <p class="section-label" id="blog-label">All articles</p>
+
+      <div class="blog-grid">
+
+        <article class="blog-card">
+          <div class="card-name">
+            <a href="/blog/how-to-count-words-in-an-essay/">How to Count Words in an Essay — And Why It Matters</a>
+          </div>
+          <p class="card-desc">Why word count requirements exist, typical ranges by academic level, and how to count accurately.</p>
+          <a class="card-cta" href="/blog/how-to-count-words-in-an-essay/" tabindex="-1" aria-hidden="true">Read article &rarr;</a>
+        </article>
+
+        <article class="blog-card">
+          <div class="card-name">
+            <a href="/blog/what-makes-a-strong-password/">What Makes a Strong Password — And How to Create One</a>
+          </div>
+          <p class="card-desc">The three properties that make a password strong — and the common habits that undermine it.</p>
+          <a class="card-cta" href="/blog/what-makes-a-strong-password/" tabindex="-1" aria-hidden="true">Read article &rarr;</a>
+        </article>
+
+        <article class="blog-card">
+          <div class="card-name">
+            <a href="/blog/celsius-to-fahrenheit-explained/">Celsius to Fahrenheit Explained — The Simple Formula and When to Use It</a>
+          </div>
+          <p class="card-desc">The conversion formula explained simply, with a reference table of temperatures worth knowing.</p>
+          <a class="card-cta" href="/blog/celsius-to-fahrenheit-explained/" tabindex="-1" aria-hidden="true">Read article &rarr;</a>
+        </article>
+
+        <article class="blog-card">
+          <div class="card-name">
+            <a href="/blog/what-is-lorem-ipsum/">What Is Lorem Ipsum? The History and Purpose of Dummy Text</a>
+          </div>
+          <p class="card-desc">The 2,000-year-old Cicero quote behind the world's most widely used design placeholder.</p>
+          <a class="card-cta" href="/blog/what-is-lorem-ipsum/" tabindex="-1" aria-hidden="true">Read article &rarr;</a>
+        </article>
+
+        <article class="blog-card">
+          <div class="card-name">
+            <a href="/blog/how-to-convert-units/">How to Convert Units — A Simple Guide for Everyday Conversions</a>
+          </div>
+          <p class="card-desc">Key conversion factors for length, weight, volume, and temperature — with a quick-reference table.</p>
+          <a class="card-cta" href="/blog/how-to-convert-units/" tabindex="-1" aria-hidden="true">Read article &rarr;</a>
+        </article>
+
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 SoftEdit Tools &middot; Free online tools</p>
+  </footer>
+
+</div>
+
+</body>
+</html>
