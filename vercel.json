@@ -1,15 +1,1 @@
-{
-  "redirects": [
-    {
-      "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "softeditools.com"
-        }
-      ],
-      "destination": "https://www.softeditools.com/:path*",
-      "permanent": true
-    }
-  ]
-}
+{}
