@@ -61,6 +61,11 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://softeditools.com/contact/</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
     <loc>https://softeditools.com/privacy-policy/</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
@@ -76,7 +81,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://softeditools.com/blog/how-many-words-is-a-5-minute-speech/</loc>
+    <loc>https://softeditools.com/blog/how-many-words-in-a-speech/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -111,11 +116,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://softeditools.com/blog/how-many-words-is-a-10-minute-speech/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://softeditools.com/blog/how-many-characters-does-instagram-allow/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -146,11 +146,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://softeditools.com/blog/how-many-words-is-a-3-minute-speech/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://softeditools.com/blog/what-is-a-character-in-writing/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -162,11 +157,6 @@
   </url>
   <url>
     <loc>https://softeditools.com/blog/how-to-calculate-age/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://softeditools.com/blog/how-many-words-is-a-1-minute-speech/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
