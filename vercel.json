@@ -1,1 +1,8 @@
-{}
+{
+  "redirects": [
+    { "source": "/blog/how-many-words-is-a-1-minute-speech/", "destination": "/blog/how-many-words-in-a-speech/", "permanent": true },
+    { "source": "/blog/how-many-words-is-a-3-minute-speech/", "destination": "/blog/how-many-words-in-a-speech/", "permanent": true },
+    { "source": "/blog/how-many-words-is-a-5-minute-speech/", "destination": "/blog/how-many-words-in-a-speech/", "permanent": true },
+    { "source": "/blog/how-many-words-is-a-10-minute-speech/", "destination": "/blog/how-many-words-in-a-speech/", "permanent": true }
+  ]
+}
