@@ -1,0 +1,61 @@
+(function () {
+  var css = [
+    '.site-nav{background:#fff;border-bottom:1px solid #e2e8f0;}',
+    '.site-nav__inner{max-width:1020px;margin:0 auto;padding:0 28px;height:54px;',
+      'display:flex;align-items:center;justify-content:space-between;}',
+    '.site-nav__brand{font-family:Georgia,Cambria,"Times New Roman",serif;',
+      'font-size:1.05rem;font-weight:normal;color:#1e293b;text-decoration:none;',
+      'letter-spacing:0.01em;transition:color 0.15s;flex-shrink:0;}',
+    '.site-nav__brand:hover{color:#0d9488;}',
+    '.site-nav__links{display:flex;align-items:center;gap:28px;',
+      'list-style:none;margin:0;padding:0;}',
+    '.site-nav__links a{font-family:Inter,"Segoe UI",Arial,sans-serif;',
+      'font-size:0.875rem;color:#64748b;text-decoration:none;',
+      'letter-spacing:0.01em;transition:color 0.15s;}',
+    '.site-nav__links a:hover{color:#0d9488;}',
+    '.site-nav__toggle{display:none;flex-direction:column;justify-content:center;',
+      'gap:5px;background:none;border:none;cursor:pointer;padding:6px 4px;}',
+    '.site-nav__toggle span{display:block;width:22px;height:1.5px;',
+      'background:#1e293b;border-radius:2px;}',
+    '@media(max-width:600px){',
+      '.site-nav{position:relative;}',
+      '.site-nav__inner{height:50px;padding:0 20px;}',
+      '.site-nav__toggle{display:flex;}',
+      '.site-nav__links{display:none;position:absolute;top:100%;left:0;right:0;',
+        'background:#fff;border-bottom:1px solid #e2e8f0;',
+        'flex-direction:column;align-items:stretch;gap:0;padding:6px 0 10px;}',
+      '.site-nav__links.is-open{display:flex;}',
+      '.site-nav__links a{display:block;padding:10px 20px;font-size:0.9rem;}',
+    '}'
+  ].join('');
+
+  var styleEl = document.createElement('style');
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+
+  var nav = document.createElement('nav');
+  nav.className = 'site-nav';
+  nav.setAttribute('role', 'navigation');
+  nav.setAttribute('aria-label', 'Main navigation');
+  nav.innerHTML =
+    '<div class="site-nav__inner">' +
+      '<a href="/" class="site-nav__brand">SoftEdit Tools</a>' +
+      '<button class="site-nav__toggle" aria-label="Toggle navigation" aria-expanded="false">' +
+        '<span></span><span></span><span></span>' +
+      '</button>' +
+      '<ul class="site-nav__links" role="list">' +
+        '<li><a href="/">Tools</a></li>' +
+        '<li><a href="/blog/">Blog</a></li>' +
+        '<li><a href="/about/">About</a></li>' +
+      '</ul>' +
+    '</div>';
+
+  document.body.insertBefore(nav, document.body.firstChild);
+
+  var toggle = nav.querySelector('.site-nav__toggle');
+  var menu = nav.querySelector('.site-nav__links');
+  toggle.addEventListener('click', function () {
+    var open = menu.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+}());
