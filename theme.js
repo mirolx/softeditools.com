@@ -22,7 +22,7 @@
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.08, rootMargin: '0px 0px -24px 0px' });
+    }, { threshold: 0, rootMargin: '0px 0px -24px 0px' });
 
     targets.forEach(function (el) { observer.observe(el); });
   }
