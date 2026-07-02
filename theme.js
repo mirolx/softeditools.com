@@ -8,7 +8,7 @@
     if (!('IntersectionObserver' in window)) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    var selector = '.tool-card, .blog-card, .stat-card, main section, main article';
+    var selector = '.tool-card, .blog-card, .stat-card, main section';
     var targets = Array.prototype.slice.call(document.querySelectorAll(selector));
     if (!targets.length) return;
 
