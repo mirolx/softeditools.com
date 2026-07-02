@@ -242,7 +242,28 @@
     </div>
 
     <div id="tab-namefinder" class="tab-panel hidden" role="tabpanel">
-      <!-- Feature 2 HTML added in Task 3 -->
+      <div class="name-input-row">
+        <input
+          type="text"
+          id="name-input"
+          class="name-input"
+          placeholder="e.g. dusty rose, sage green, terracotta…"
+          aria-label="Color name"
+          autocomplete="off"
+          spellcheck="false"
+        >
+        <button id="find-btn" class="find-btn">Find</button>
+      </div>
+      <div id="popular-chips" class="popular-chips" aria-label="Popular color names">
+        <button class="chip" data-q="dusty rose">dusty rose</button>
+        <button class="chip" data-q="sage green">sage green</button>
+        <button class="chip" data-q="terracotta">terracotta</button>
+        <button class="chip" data-q="ivory">ivory</button>
+        <button class="chip" data-q="blush">blush</button>
+        <button class="chip" data-q="taupe">taupe</button>
+        <button class="chip" data-q="mustard">mustard</button>
+      </div>
+      <div id="name-results" style="margin-top:24px;"></div>
     </div>
   </main>
 
@@ -483,7 +504,91 @@
     { name: 'rose quartz',      hex: '#F7B4BC' },
   ];
 
-  /* Feature 2 JS inserted here — Task 3 */
+  /* ── Feature 2: Color Name to Hex ── */
+  function hexToRgb(hex) {
+    return {
+      r: parseInt(hex.slice(1, 3), 16),
+      g: parseInt(hex.slice(3, 5), 16),
+      b: parseInt(hex.slice(5, 7), 16)
+    };
+  }
+
+  function buildColorCard(hex, label) {
+    var rgb = hexToRgb(hex);
+    var card = document.createElement('div');
+    card.className = 'color-card';
+    card.innerHTML =
+      '<span class="color-swatch" style="background:' + hex + ';display:block;"></span>' +
+      '<div class="color-info">' +
+        (label ? '<div class="color-label">' + label + '</div>' : '') +
+        '<div class="color-hex">' + hex + '</div>' +
+        '<div class="color-rgb">rgb(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ')</div>' +
+        '<button class="copy-btn" data-hex="' + hex + '">Copy hex</button>' +
+      '</div>';
+    card.querySelector('.copy-btn').addEventListener('click', function () {
+      copyText(hex, this, 'Copy hex');
+    });
+    return card;
+  }
+
+  function findColorsByName(query) {
+    query = query.trim().toLowerCase();
+    if (!query) return [];
+    var results = [];
+    var seen = new Set();
+    function add(entry) {
+      if (!seen.has(entry.hex)) { seen.add(entry.hex); results.push(entry); }
+    }
+    COLOR_DB.forEach(function (e) { if (e.name === query) add(e); });
+    COLOR_DB.forEach(function (e) { if (e.name !== query && e.name.startsWith(query)) add(e); });
+    COLOR_DB.forEach(function (e) { if (!e.name.startsWith(query) && e.name.includes(query)) add(e); });
+    var qWords = query.split(/\s+/);
+    COLOR_DB.forEach(function (e) {
+      var nWords = e.name.split(/\s+/);
+      if (!e.name.includes(query) && qWords.some(function (qw) { return nWords.indexOf(qw) !== -1; })) add(e);
+    });
+    return results.slice(0, 4);
+  }
+
+  function renderNameResults(results, query) {
+    var container = document.getElementById('name-results');
+    container.innerHTML = '';
+    if (results.length === 0) {
+      container.innerHTML = '<p class="no-results">No colors found for "' + query + '". Try "sage", "blush", or "rust".</p>';
+      return;
+    }
+    var grid = document.createElement('div');
+    grid.className = 'color-grid';
+    results.forEach(function (entry) { grid.appendChild(buildColorCard(entry.hex, entry.name)); });
+    container.appendChild(grid);
+  }
+
+  var nameInput = document.getElementById('name-input');
+  var findBtn   = document.getElementById('find-btn');
+  var nameTimer = null;
+
+  function runNameSearch() {
+    var q = nameInput.value;
+    renderNameResults(findColorsByName(q), q);
+  }
+
+  nameInput.addEventListener('input', function () {
+    clearTimeout(nameTimer);
+    nameTimer = setTimeout(runNameSearch, 300);
+  });
+  nameInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { clearTimeout(nameTimer); runNameSearch(); }
+  });
+  findBtn.addEventListener('click', function () { clearTimeout(nameTimer); runNameSearch(); });
+
+  document.querySelectorAll('.chip').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      nameInput.value = chip.dataset.q;
+      runNameSearch();
+      nameInput.focus();
+    });
+  });
+
   /* Feature 1 JS inserted here — Tasks 4 & 5 */
 </script>
 
