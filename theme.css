@@ -11,7 +11,7 @@
   --accent-light: #EDF0E5;
   --forest:       #3F4A38;
   --text:         #33382E;
-  --muted:        #7A7E6F;
+  --muted:        #686D5D;
   /* --bg stays warm white: inputs and cards read var(--bg) for their own
      background. The cream page canvas is set on body below. */
   --bg:           #FDFCF7;
@@ -96,6 +96,9 @@ footer {
 
 footer a, .footer-blog-link { color: var(--accent-dark); }
 footer a:hover, .footer-blog-link:hover { color: var(--forest); }
+
+/* content links: darker sage for AA contrast on cream */
+main a:not([class]) { color: var(--accent-dark); }
 
 /* ── Fade-in on scroll ──
    theme.js adds .js-fade to <html> and .fade-in to candidate elements,
