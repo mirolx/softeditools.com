@@ -250,6 +250,71 @@
       line-height: 1.6;
     }
 
+    /* ── Hero band ── */
+    .hero-band {
+      background: var(--forest, #3F4A38);
+      color: #F7F4EA;
+      border-radius: 24px;
+      padding: 60px 36px 64px;
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .hero-eyebrow {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #C9CDB8;
+      margin-bottom: 18px;
+    }
+
+    .hero-title {
+      font-family: var(--serif);
+      font-size: 2.6rem;
+      font-weight: 500;
+      line-height: 1.15;
+      color: #F7F4EA;
+    }
+
+    .hero-text {
+      max-width: 560px;
+      margin: 18px auto 0;
+      font-size: 0.95rem;
+      line-height: 1.75;
+      color: #DDDCC8;
+    }
+
+    @media (max-width: 480px) {
+      .hero-band { padding: 44px 22px 48px; border-radius: 20px; }
+      .hero-title { font-size: 1.9rem; }
+    }
+
+    /* ── CTA circle ── */
+    .card-cta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .cta-circle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+      font-size: 0.85rem;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .tool-card:hover .cta-circle {
+      background: var(--accent);
+      color: #F7F4EA;
+      border-color: var(--accent);
+    }
+
     /* ── Mobile header ── */
     @media (max-width: 480px) {
       header { padding: 48px 0 36px; }
@@ -276,9 +341,11 @@
   </header>
 
   <main>
-    <section class="intro-section">
-      <p style="max-width:640px;margin:0 auto 52px;text-align:center;color:var(--muted);font-size:0.95rem;line-height:1.75;">
-        SoftEdit Tools is a free collection of simple online utilities for everyday tasks — word counting, unit conversion, password generation, and more. No sign-up required. Everything runs in your browser, so your text stays private.
+    <section class="hero-band">
+      <p class="hero-eyebrow">Free online tools &middot; no sign-up</p>
+      <h2 class="hero-title">Simple tools, <em>softly made</em></h2>
+      <p class="hero-text">
+        SoftEdit Tools is a free collection of simple online utilities for everyday tasks — word counting, unit conversion, password generation, and more. Everything runs in your browser, so your text stays private.
       </p>
     </section>
     <section class="tools-section" aria-labelledby="tools-label">
@@ -293,7 +360,7 @@
             <a href="/word-counter/">Word Counter</a>
           </div>
           <p class="card-desc">Count words, characters, sentences, and reading time instantly.</p>
-          <a class="card-cta" href="/word-counter/" tabindex="-1" aria-hidden="true">Use tool &rarr;</a>
+          <a class="card-cta" href="/word-counter/" tabindex="-1" aria-hidden="true">Use tool <span class="cta-circle">&rarr;</span></a>
         </article>
 
         <!-- Character Counter -->
@@ -303,7 +370,7 @@
             <a href="/character-counter/">Character Counter</a>
           </div>
           <p class="card-desc">Count characters with and without spaces for any block of text.</p>
-          <a class="card-cta" href="/character-counter/" tabindex="-1" aria-hidden="true">Use tool &rarr;</a>
+          <a class="card-cta" href="/character-counter/" tabindex="-1" aria-hidden="true">Use tool <span class="cta-circle">&rarr;</span></a>
         </article>
 
         <!-- Case Converter -->
@@ -313,7 +380,7 @@
             <a href="/case-converter/">Case Converter</a>
           </div>
           <p class="card-desc">Convert text to uppercase, lowercase, title case, and more.</p>
-          <a class="card-cta" href="/case-converter/" tabindex="-1" aria-hidden="true">Use tool &rarr;</a>
+          <a class="card-cta" href="/case-converter/" tabindex="-1" aria-hidden="true">Use tool <span class="cta-circle">&rarr;</span></a>
         </article>
 
         <!-- Lorem Ipsum Generator -->
@@ -323,7 +390,7 @@
             <a href="/lorem-ipsum-generator/">Lorem Ipsum Generator</a>
           </div>
           <p class="card-desc">Generate dummy placeholder text by paragraphs, sentences, or words instantly.</p>
-          <a class="card-cta" href="/lorem-ipsum-generator/" tabindex="-1" aria-hidden="true">Use tool &rarr;</a>
+          <a class="card-cta" href="/lorem-ipsum-generator/" tabindex="-1" aria-hidden="true">Use tool <span class="cta-circle">&rarr;</span></a>
         </article>
 
         <!-- Password Generator -->
@@ -333,7 +400,7 @@
             <a href="/password-generator/">Password Generator</a>
           </div>
           <p class="card-desc">Generate strong, random passwords with custom length and character options.</p>
-          <a class="card-cta" href="/password-generator/" tabindex="-1" aria-hidden="true">Use tool &rarr;</a>
+          <a class="card-cta" href="/password-generator/" tabindex="-1" aria-hidden="true">Use tool <span class="cta-circle">&rarr;</span></a>
         </article>
 
         <!-- Calculator -->
@@ -343,7 +410,7 @@
             <a href="/calculator/">Calculator</a>
           </div>
           <p class="card-desc">Add, subtract, multiply, and divide instantly. Full keyboard support included.</p>
-          <a class="card-cta" href="/calculator/" tabindex="-1" aria-hidden="true">Use tool &rarr;</a>
+          <a class="card-cta" href="/calculator/" tabindex="-1" aria-hidden="true">Use tool <span class="cta-circle">&rarr;</span></a>
         </article>
 
         <!-- Scientific Calculator -->
@@ -353,7 +420,7 @@
             <a href="/scientific-calculator/">Scientific Calculator</a>
           </div>
           <p class="card-desc">Trig, logarithms, powers, roots, and memory functions. DEG/RAD toggle included.</p>
-          <a class="card-cta" href="/scientific-calculator/" tabindex="-1" aria-hidden="true">Use tool &rarr;</a>
+          <a class="card-cta" href="/scientific-calculator/" tabindex="-1" aria-hidden="true">Use tool <span class="cta-circle">&rarr;</span></a>
         </article>
 
         <!-- Unit Converter -->
@@ -363,7 +430,7 @@
             <a href="/unit-converter/">Unit Converter</a>
           </div>
           <p class="card-desc">Convert length, weight, temperature, volume, area, time, speed, and data storage instantly.</p>
-          <a class="card-cta" href="/unit-converter/" tabindex="-1" aria-hidden="true">Use tool &rarr;</a>
+          <a class="card-cta" href="/unit-converter/" tabindex="-1" aria-hidden="true">Use tool <span class="cta-circle">&rarr;</span></a>
         </article>
 
         <!-- Age Calculator -->
@@ -373,7 +440,7 @@
             <a href="/age-calculator/">Age Calculator</a>
           </div>
           <p class="card-desc">Calculate your exact age in years, months, days, hours and minutes. Includes birthday countdown.</p>
-          <a class="card-cta" href="/age-calculator/" tabindex="-1" aria-hidden="true">Use tool &rarr;</a>
+          <a class="card-cta" href="/age-calculator/" tabindex="-1" aria-hidden="true">Use tool <span class="cta-circle">&rarr;</span></a>
         </article>
 
         <!-- Palette & Color Finder -->
@@ -383,7 +450,7 @@
             <a href="/palette-finder/">Palette &amp; Color Finder</a>
           </div>
           <p class="card-desc">Extract dominant colors from any image, or find the hex code for any color name like "dusty rose" or "sage green".</p>
-          <a class="card-cta" href="/palette-finder/" tabindex="-1" aria-hidden="true">Use tool &rarr;</a>
+          <a class="card-cta" href="/palette-finder/" tabindex="-1" aria-hidden="true">Use tool <span class="cta-circle">&rarr;</span></a>
         </article>
 
       </div>
