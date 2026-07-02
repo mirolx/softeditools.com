@@ -366,14 +366,14 @@
   /* ── Shared clipboard helper ── */
   function copyText(text, btn, defaultLabel) {
     navigator.clipboard.writeText(text).then(function () {
-      btn.textContent = 'Copied!';
+      btn.textContent = '✓ Copied';
       btn.classList.add('copied');
       setTimeout(function () { btn.textContent = defaultLabel; btn.classList.remove('copied'); }, 1800);
     }).catch(function () {
       var ta = document.createElement('textarea');
       ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
       document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
-      btn.textContent = 'Copied!'; btn.classList.add('copied');
+      btn.textContent = '✓ Copied'; btn.classList.add('copied');
       setTimeout(function () { btn.textContent = defaultLabel; btn.classList.remove('copied'); }, 1800);
     });
   }

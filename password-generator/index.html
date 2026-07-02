@@ -855,7 +855,7 @@
     var pw = pwOutput.value;
     if (!pw) return;
     navigator.clipboard.writeText(pw).then(function() {
-      copyLabel.textContent = 'Copied!';
+      copyLabel.textContent = '✓ Copied';
       copyBtn.classList.add('copied');
       clearTimeout(copyTimer);
       copyTimer = setTimeout(resetCopyBtn, 2000);
@@ -863,7 +863,7 @@
       /* Fallback for older browsers */
       pwOutput.select();
       document.execCommand('copy');
-      copyLabel.textContent = 'Copied!';
+      copyLabel.textContent = '✓ Copied';
       copyBtn.classList.add('copied');
       clearTimeout(copyTimer);
       copyTimer = setTimeout(resetCopyBtn, 2000);
@@ -905,7 +905,7 @@
     if (!btn) return;
     var pw = btn.dataset.pw;
     navigator.clipboard.writeText(pw).then(function() {
-      btn.textContent = 'Copied!';
+      btn.textContent = '✓ Copied';
       btn.classList.add('copied');
       setTimeout(function() {
         btn.textContent = 'Copy';
@@ -918,7 +918,7 @@
       tmp.select();
       document.execCommand('copy');
       document.body.removeChild(tmp);
-      btn.textContent = 'Copied!';
+      btn.textContent = '✓ Copied';
       btn.classList.add('copied');
       setTimeout(function() {
         btn.textContent = 'Copy';

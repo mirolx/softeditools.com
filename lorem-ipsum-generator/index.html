@@ -613,7 +613,7 @@
     if (!output.value) return;
     var btn = this;
     navigator.clipboard.writeText(output.value).then(function() {
-      btn.textContent = 'Copied!';
+      btn.textContent = '✓ Copied';
       btn.classList.add('copied');
       setTimeout(function() {
         btn.textContent = 'Copy';

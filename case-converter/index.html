@@ -539,7 +539,7 @@
   copyBtn.addEventListener('click', function () {
     if (!input.value) return;
     navigator.clipboard.writeText(input.value).then(function () {
-      copyBtn.textContent = 'Copied!';
+      copyBtn.textContent = '✓ Copied';
       copyBtn.classList.add('copied');
       setTimeout(function () {
         copyBtn.textContent = 'Copy';
