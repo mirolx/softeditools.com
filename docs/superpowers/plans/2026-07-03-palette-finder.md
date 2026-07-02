@@ -1,0 +1,1114 @@
+# Palette & Color Finder — Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Build `palette-finder/index.html` — a static HTML tool page with two features: dominant color extraction from uploaded images (Median Cut + Canvas API) and color name-to-hex lookup from a local ~180-entry database, plus homepage card and sitemap entry.
+
+**Architecture:** Single self-contained HTML file following the existing SoftEdit Tools pattern (see `case-converter/index.html` as reference). All logic is client-side. Feature 1 uses Canvas `getImageData` + recursive Median Cut. Feature 2 uses a local JS array with 4-priority fuzzy search. Both features share a tab-switched layout and the same color card component.
+
+**Tech Stack:** Vanilla HTML5, CSS3, JavaScript (ES6), Canvas API, Clipboard API. No build tools, no external libraries.
+
+## Global Constraints
+
+- Match existing design tokens exactly: `--accent: #0d9488`, `--font: Inter, 'Segoe UI', Arial, sans-serif`, `--radius: 8px` (see `:root` in `case-converter/index.html`)
+- Nav bar injected by `/nav.js` — always include `<script src="/nav.js" defer>`
+- AdSense tag: `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6940565595128907" crossorigin="anonymous"></script>`
+- Canonical URL: `https://softeditools.com/palette-finder/`
+- No dark mode, no external API calls, no user accounts
+- Color card grid: 3-col desktop, 2-col ≤640px
+
+---
+
+### Task 1: Page skeleton, CSS, tab UI
+
+**Files:**
+- Create: `palette-finder/index.html`
+
+**Interfaces:**
+- Produces: Full page shell with working tab switching, all CSS, SEO meta, shared `copyText()` helper, and placeholder comment anchors for subsequent tasks.
+
+- [ ] **Step 1: Create `palette-finder/index.html`**
+
+Create the file with this exact content:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Palette Extractor &amp; Color Name to Hex — Free Online Tool</title>
+  <meta name="description" content="Free color palette extractor and color name to hex converter. Upload any image to get dominant colors, or type a color name like 'dusty rose' to find its hex code. No sign-up required.">
+  <link rel="canonical" href="https://softeditools.com/palette-finder/">
+
+  <meta property="og:title" content="Color Palette Extractor &amp; Color Name to Hex — Free Online Tool">
+  <meta property="og:description" content="Free color palette extractor and color name to hex converter. Upload any image to get dominant colors, or type a color name like 'dusty rose' to find its hex code. No sign-up required.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://softeditools.com/palette-finder/">
+
+  <meta name="robots" content="index, follow">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Color Palette Extractor & Color Name to Hex",
+    "url": "https://softeditools.com/palette-finder/",
+    "description": "Free color palette extractor and color name to hex converter. Upload any image to get dominant colors, or type a color name like 'dusty rose' to find its hex code.",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Web",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent:       #0d9488;
+      --accent-dark:  #0f766e;
+      --accent-light: #f0fdfa;
+      --text:         #1e293b;
+      --muted:        #64748b;
+      --bg:           #ffffff;
+      --surface:      #f8fafc;
+      --border:       #e2e8f0;
+      --radius:       8px;
+      --font:         Inter, 'Segoe UI', Arial, sans-serif;
+    }
+
+    body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.65; font-size: 16px; }
+
+    .container { max-width: 880px; margin: 0 auto; padding: 0 20px; }
+
+    .hidden { display: none; }
+
+    /* Header */
+    header { padding: 44px 0 24px; text-align: center; }
+    h1 { font-size: 2.25rem; font-weight: 700; letter-spacing: -0.025em; color: var(--text); }
+    .subtitle { margin-top: 10px; color: var(--muted); font-size: 1rem; max-width: 560px; margin-left: auto; margin-right: auto; }
+
+    /* Tabs */
+    .tab-bar { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 28px; }
+    .tab-btn {
+      padding: 10px 24px;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      font-family: var(--font);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab-btn:hover:not(.active) { color: var(--text); }
+
+    /* Drop zone */
+    .drop-zone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 48px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+    .drop-zone:hover, .drop-zone.drag-over { border-color: var(--accent); background: var(--accent-light); }
+    .drop-zone__icon { font-size: 2.25rem; margin-bottom: 12px; display: block; }
+    .drop-zone__text { color: var(--text); font-size: 0.95rem; font-weight: 500; }
+    .drop-zone__hint { color: #cbd5e1; font-size: 0.8rem; margin-top: 6px; }
+
+    /* Loading */
+    .loading-state { text-align: center; padding: 48px 24px; color: var(--muted); font-size: 0.9rem; }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Image preview */
+    .img-preview {
+      max-height: 200px; width: auto; max-width: 100%;
+      object-fit: contain;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      display: block;
+      margin: 0 auto 20px;
+    }
+
+    /* Color card grid */
+    .color-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    @media (max-width: 640px) { .color-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    /* Color card */
+    .color-card { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .color-swatch { height: 80px; width: 100%; display: block; }
+    .color-info { padding: 12px 14px; background: var(--bg); }
+    .color-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; }
+    .color-hex { font-size: 0.9rem; font-weight: 700; color: var(--text); font-family: 'Courier New', monospace; }
+    .color-rgb { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+    .copy-btn {
+      width: 100%; margin-top: 10px; padding: 6px 8px;
+      background: var(--surface); color: var(--muted);
+      border: 1px solid var(--border); border-radius: 5px;
+      font-family: var(--font); font-size: 0.78rem; font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .copy-btn:hover { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
+    .copy-btn.copied { background: #dcfce7; color: #16a34a; border-color: #86efac; }
+
+    /* Copy-all bar */
+    .copy-all-bar { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; align-items: center; }
+    .copy-all-btn {
+      padding: 8px 20px;
+      background: var(--accent); color: #fff;
+      border: 1px solid var(--accent); border-radius: 6px;
+      font-family: var(--font); font-size: 0.875rem; font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .copy-all-btn:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+    .copy-all-btn.copied { background: #16a34a; border-color: #16a34a; }
+    .reset-btn {
+      padding: 8px 16px;
+      background: var(--bg); color: var(--muted);
+      border: 1px solid var(--border); border-radius: 6px;
+      font-family: var(--font); font-size: 0.875rem;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .reset-btn:hover { background: #fef2f2; color: #dc2626; border-color: #fca5a5; }
+
+    /* Error */
+    .error-state {
+      padding: 20px;
+      background: #fef2f2; border: 1px solid #fecaca; border-radius: var(--radius);
+      color: #dc2626; font-size: 0.9rem; text-align: center;
+    }
+
+    /* Name finder */
+    .name-input-row { display: flex; gap: 10px; }
+    .name-input {
+      flex: 1; padding: 10px 14px;
+      font-family: var(--font); font-size: 1rem; color: var(--text);
+      background: var(--bg);
+      border: 2px solid var(--border); border-radius: var(--radius);
+      outline: none; transition: border-color 0.15s;
+    }
+    .name-input:focus { border-color: var(--accent); }
+    .name-input::placeholder { color: #cbd5e1; }
+    .find-btn {
+      padding: 10px 22px;
+      background: var(--accent); color: #fff;
+      border: 1px solid var(--accent); border-radius: 6px;
+      font-family: var(--font); font-size: 0.9rem; font-weight: 600;
+      cursor: pointer; white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .find-btn:hover { background: var(--accent-dark); }
+
+    /* Popular chips */
+    .popular-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .chip {
+      padding: 5px 13px;
+      background: var(--surface); color: var(--muted);
+      border: 1px solid var(--border); border-radius: 99px;
+      font-family: var(--font); font-size: 0.8rem;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .chip:hover { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
+
+    /* No results */
+    .no-results { color: var(--muted); font-size: 0.9rem; padding: 24px 0; text-align: center; }
+
+    /* Content sections */
+    .content-section { margin-top: 52px; padding-top: 32px; border-top: 1px solid var(--border); }
+    .content-section h2 { font-size: 1.35rem; font-weight: 700; color: var(--text); margin-bottom: 16px; letter-spacing: -0.01em; }
+    .content-section p { color: var(--muted); font-size: 0.96rem; margin-bottom: 12px; }
+    .content-section p:last-child { margin-bottom: 0; }
+    .faq-list { margin-top: 4px; }
+    .faq-item { margin-bottom: 26px; }
+    .faq-item:last-child { margin-bottom: 0; }
+    .faq-item h3 { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .faq-item p { color: var(--muted); font-size: 0.95rem; }
+
+    /* Footer */
+    footer { margin-top: 56px; padding: 24px 0 32px; border-top: 1px solid var(--border); text-align: center; color: var(--muted); font-size: 0.85rem; }
+
+    /* Mobile */
+    @media (max-width: 480px) {
+      h1 { font-size: 1.75rem; }
+      header { padding: 28px 0 16px; }
+      .tab-btn { padding: 10px 14px; font-size: 0.82rem; }
+      .name-input-row { flex-direction: column; }
+    }
+  </style>
+
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6940565595128907" crossorigin="anonymous"></script>
+  <script src="/nav.js" defer></script>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>Palette &amp; Color Finder</h1>
+    <p class="subtitle">Extract dominant colors from any image — or find the hex code for any color name.</p>
+  </header>
+
+  <main>
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" data-tab="extractor" role="tab" aria-selected="true">Color Palette Extractor</button>
+      <button class="tab-btn" data-tab="namefinder" role="tab" aria-selected="false">Color Name to Hex</button>
+    </div>
+
+    <div id="tab-extractor" class="tab-panel" role="tabpanel">
+      <!-- Feature 1 HTML added in Task 4 -->
+    </div>
+
+    <div id="tab-namefinder" class="tab-panel hidden" role="tabpanel">
+      <!-- Feature 2 HTML added in Task 3 -->
+    </div>
+  </main>
+
+  <section class="content-section" aria-labelledby="how-heading">
+    <h2 id="how-heading">How to use this tool</h2>
+    <p>
+      <strong>Color Palette Extractor:</strong> Stay on the first tab, drag and drop any image onto the upload zone — or click it to browse your files. The tool reads pixel data directly in your browser and extracts six dominant colors. No image is ever sent to a server.
+    </p>
+    <p>
+      <strong>Color Name to Hex:</strong> Switch to the second tab and type any descriptive color name — "dusty rose", "sage green", "terracotta", and so on. Matching colors appear as you type. Click the chip shortcuts to explore popular editorial palette names.
+    </p>
+    <p>
+      Click <strong>Copy hex</strong> on any color card to copy that code, or use <strong>Copy all hex</strong> to grab the full palette as a comma-separated list.
+    </p>
+  </section>
+
+  <section class="content-section" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Frequently asked questions</h2>
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <h3>Is my image uploaded to a server?</h3>
+        <p>No. Everything runs entirely inside your browser using the Canvas API. Your image never leaves your device.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>How does the color extraction work?</h3>
+        <p>The tool reads raw pixel data from your image using an HTML5 Canvas, samples a representative subset of pixels, then uses a Median Cut algorithm to partition the color space into clusters. The average color of each cluster becomes one entry in your palette.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What color names does the lookup support?</h3>
+        <p>The database includes around 180 entries — from standard web colors to editorial names used in Etsy shops, print-on-demand design, and interior decor: dusty rose, sage green, terracotta, taupe, champagne, celadon, and many more.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What image formats are supported?</h3>
+        <p>Any format your browser can display: JPEG, PNG, WebP, GIF, SVG, and AVIF. Processing is entirely local so there is no server-side format restriction.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Is this tool free?</h3>
+        <p>Yes, completely free. No sign-up, no account, no usage limit.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; <span id="year"></span> softeditools.com — Free color palette extractor and color name to hex tool</p>
+  </footer>
+
+</div>
+
+<script>
+  /* ── Tab switching ── */
+  var tabBtns = document.querySelectorAll('.tab-btn');
+  var tabPanels = document.querySelectorAll('.tab-panel');
+  tabBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      tabBtns.forEach(function (b) { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+      tabPanels.forEach(function (p) { p.classList.add('hidden'); });
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+      document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+    });
+  });
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  /* ── Shared clipboard helper ── */
+  function copyText(text, btn, defaultLabel) {
+    navigator.clipboard.writeText(text).then(function () {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(function () { btn.textContent = defaultLabel; btn.classList.remove('copied'); }, 1800);
+    }).catch(function () {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      btn.textContent = 'Copied!'; btn.classList.add('copied');
+      setTimeout(function () { btn.textContent = defaultLabel; btn.classList.remove('copied'); }, 1800);
+    });
+  }
+
+  /* COLOR_DB inserted here — Task 2 */
+  /* Feature 2 JS inserted here — Task 3 */
+  /* Feature 1 JS inserted here — Tasks 4 & 5 */
+</script>
+
+</body>
+</html>
+```
+
+- [ ] **Step 2: Verify in browser**
+
+Serve via local server (nav.js requires HTTP, not `file://`):
+
+```bash
+python -m http.server 8000
+```
+
+Open `http://localhost:8000/palette-finder/` and verify:
+- Nav bar appears at the top
+- Heading and subtitle render correctly
+- "Color Palette Extractor" tab is active (teal underline)
+- Clicking "Color Name to Hex" switches panels (both are empty — correct)
+- Footer year shows current year
+- Page is responsive: on mobile viewport, font sizes reduce
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add palette-finder/index.html
+git commit -m "feat: add palette-finder page skeleton, CSS, and tab UI"
+```
+
+---
+
+### Task 2: Color name database
+
+**Files:**
+- Modify: `palette-finder/index.html` — add `COLOR_DB` array inside `<script>`
+
+**Interfaces:**
+- Produces: `COLOR_DB` — array of `{ name: string, hex: string }` objects (~180 entries), global to the script block, consumed by Feature 2 in Task 3.
+
+- [ ] **Step 1: Insert COLOR_DB**
+
+Inside the `<script>` block, replace the line `/* COLOR_DB inserted here — Task 2 */` with:
+
+```js
+  /* ── Color name database ── */
+  var COLOR_DB = [
+    /* Basic web */
+    { name: 'red',              hex: '#EF4444' },
+    { name: 'orange',           hex: '#F97316' },
+    { name: 'yellow',           hex: '#EAB308' },
+    { name: 'green',            hex: '#22C55E' },
+    { name: 'blue',             hex: '#3B82F6' },
+    { name: 'purple',           hex: '#A855F7' },
+    { name: 'pink',             hex: '#EC4899' },
+    { name: 'teal',             hex: '#14B8A6' },
+    { name: 'navy',             hex: '#1E3A5F' },
+    { name: 'brown',            hex: '#92400E' },
+    { name: 'grey',             hex: '#6B7280' },
+    { name: 'gray',             hex: '#6B7280' },
+    { name: 'black',            hex: '#1F2937' },
+    { name: 'white',            hex: '#FFFFFF' },
+    { name: 'lime',             hex: '#84CC16' },
+    { name: 'cyan',             hex: '#06B6D4' },
+    { name: 'indigo',           hex: '#6366F1' },
+    { name: 'violet',           hex: '#7C3AED' },
+    { name: 'magenta',          hex: '#D946EF' },
+    { name: 'gold',             hex: '#F59E0B' },
+    { name: 'silver',           hex: '#9CA3AF' },
+    { name: 'coral',            hex: '#F87171' },
+    { name: 'salmon',           hex: '#FCA5A5' },
+    { name: 'crimson',          hex: '#DC2626' },
+    { name: 'maroon',           hex: '#7F1D1D' },
+    { name: 'olive',            hex: '#65A30D' },
+    { name: 'turquoise',        hex: '#2DD4BF' },
+    { name: 'lavender',         hex: '#C4B5FD' },
+    { name: 'beige',            hex: '#F5F5DC' },
+    { name: 'ivory',            hex: '#FFFFF0' },
+    { name: 'cream',            hex: '#FFF8DC' },
+    /* Editorial / pastel */
+    { name: 'dusty rose',       hex: '#D4A5A5' },
+    { name: 'dusty pink',       hex: '#D8A8B0' },
+    { name: 'dusty blue',       hex: '#7BAEC5' },
+    { name: 'dusty lavender',   hex: '#B8ACCC' },
+    { name: 'dusty teal',       hex: '#6FA8A0' },
+    { name: 'dusty green',      hex: '#8A9E88' },
+    { name: 'dusty mint',       hex: '#A4CCB8' },
+    { name: 'sage green',       hex: '#87A878' },
+    { name: 'sage',             hex: '#8FAF8A' },
+    { name: 'muted sage',       hex: '#A0B498' },
+    { name: 'pale sage',        hex: '#C8DCC4' },
+    { name: 'sage mist',        hex: '#C4D4BC' },
+    { name: 'blush',            hex: '#F2B8C6' },
+    { name: 'blush pink',       hex: '#F4B4C0' },
+    { name: 'blush rose',       hex: '#F0A4B0' },
+    { name: 'pale pink',        hex: '#FDD8E0' },
+    { name: 'muted pink',       hex: '#D4A4B0' },
+    { name: 'soft peach',       hex: '#FDDBC6' },
+    { name: 'peach',            hex: '#FDBA74' },
+    { name: 'warm ivory',       hex: '#F8F4E9' },
+    { name: 'off white',        hex: '#FAF9F6' },
+    { name: 'warm white',       hex: '#FDF8F2' },
+    { name: 'cool white',       hex: '#F4F8FB' },
+    { name: 'antique white',    hex: '#FAEBD7' },
+    { name: 'linen white',      hex: '#FAF0E6' },
+    { name: 'taupe',            hex: '#B8A898' },
+    { name: 'rose taupe',       hex: '#B08080' },
+    { name: 'warm beige',       hex: '#E8D9C4' },
+    { name: 'cool grey',        hex: '#A8B4BC' },
+    { name: 'ash grey',         hex: '#B8C0C8' },
+    { name: 'warm grey',        hex: '#C0B8B0' },
+    { name: 'charcoal',         hex: '#374151' },
+    { name: 'terracotta',       hex: '#C8745A' },
+    { name: 'muted coral',      hex: '#D4856A' },
+    { name: 'soft coral',       hex: '#F09070' },
+    { name: 'warm rust',        hex: '#C04828' },
+    { name: 'rust',             hex: '#B45309' },
+    { name: 'brick',            hex: '#A04030' },
+    { name: 'mustard',          hex: '#D97706' },
+    { name: 'muted mustard',    hex: '#C4A020' },
+    { name: 'butter yellow',    hex: '#F8E880' },
+    { name: 'pale yellow',      hex: '#FEF9C3' },
+    { name: 'straw',            hex: '#E4D88A' },
+    { name: 'mauve',            hex: '#C4829C' },
+    { name: 'muted mauve',      hex: '#C4A4B0' },
+    { name: 'champagne',        hex: '#F7E7C8' },
+    { name: 'celadon',          hex: '#ACE1AF' },
+    { name: 'ecru',             hex: '#C2B280' },
+    { name: 'soft lilac',       hex: '#DDD0F0' },
+    { name: 'pale blue',        hex: '#C8DDF0' },
+    { name: 'powder blue',      hex: '#B0C8E0' },
+    { name: 'pale lavender',    hex: '#DDD4F4' },
+    { name: 'lavender mist',    hex: '#E6E0F8' },
+    { name: 'faded rose',       hex: '#D0A0A0' },
+    { name: 'nude',             hex: '#E8C4A4' },
+    /* Etsy / goods design */
+    { name: 'clay',             hex: '#C87050' },
+    { name: 'dusk',             hex: '#8878A0' },
+    { name: 'parchment',        hex: '#F2EAD8' },
+    { name: 'linen',            hex: '#E8DCC8' },
+    { name: 'sand',             hex: '#C2A97A' },
+    { name: 'warm sand',        hex: '#E8CEAA' },
+    { name: 'desert sand',      hex: '#E8C898' },
+    { name: 'biscuit',          hex: '#E4C898' },
+    { name: 'oatmeal',          hex: '#E4D8C0' },
+    { name: 'flax',             hex: '#E0C870' },
+    { name: 'slate',            hex: '#708090' },
+    { name: 'slate blue',       hex: '#6878A8' },
+    { name: 'stone',            hex: '#8C8070' },
+    { name: 'fog',              hex: '#C8C8D0' },
+    { name: 'mist',             hex: '#D0D8E0' },
+    { name: 'pewter',           hex: '#909098' },
+    { name: 'pine',             hex: '#2D5A4A' },
+    { name: 'forest',           hex: '#2D4A2D' },
+    { name: 'fern',             hex: '#6A9060' },
+    { name: 'moss',             hex: '#8A8C5C' },
+    { name: 'khaki',            hex: '#C3B58A' },
+    { name: 'thistle',          hex: '#D8B0D8' },
+    { name: 'wisteria',         hex: '#9878C8' },
+    { name: 'periwinkle',       hex: '#8890D8' },
+    { name: 'cornflower',       hex: '#6080D0' },
+    { name: 'sky',              hex: '#88C0E0' },
+    { name: 'sky blue',         hex: '#7EB8D8' },
+    { name: 'cerulean',         hex: '#2080B0' },
+    { name: 'tiffany blue',     hex: '#81D8D0' },
+    { name: 'seafoam',          hex: '#9EE0D0' },
+    { name: 'mint',             hex: '#98E4D4' },
+    { name: 'pistachio',        hex: '#93C67A' },
+    { name: 'copper',           hex: '#B87040' },
+    { name: 'bronze',           hex: '#A06830' },
+    { name: 'birch',            hex: '#E0D0B8' },
+    { name: 'mushroom',         hex: '#B0A090' },
+    { name: 'cocoa',            hex: '#8C5038' },
+    { name: 'caramel',          hex: '#C87840' },
+    { name: 'butterscotch',     hex: '#D89840' },
+    { name: 'honey',            hex: '#E0A030' },
+    { name: 'amber',            hex: '#D08020' },
+    { name: 'tobacco',          hex: '#9C6030' },
+    { name: 'sienna',           hex: '#A05030' },
+    { name: 'wine',             hex: '#6C2040' },
+    { name: 'plum',             hex: '#6C2050' },
+    { name: 'boysenberry',      hex: '#7C2858' },
+    { name: 'currant',          hex: '#7C2838' },
+    { name: 'fig',              hex: '#6C2848' },
+    { name: 'rosewood',         hex: '#A06060' },
+    { name: 'tawny',            hex: '#C06828' },
+    { name: 'bark',             hex: '#786050' },
+    /* Trendy */
+    { name: 'millennial pink',  hex: '#F4A7B9' },
+    { name: 'gen z yellow',     hex: '#F8E040' },
+    { name: 'matcha',           hex: '#B5CC8E' },
+    { name: 'aubergine',        hex: '#542050' },
+    { name: 'lilac',            hex: '#C8A8E8' },
+    { name: 'buttercup',        hex: '#F8D848' },
+    { name: 'peach fuzz',       hex: '#FFBE98' },
+    { name: 'digital lavender', hex: '#C8B8E8' },
+    { name: 'serenity blue',    hex: '#92A8D1' },
+    { name: 'rose quartz',      hex: '#F7B4BC' },
+  ];
+```
+
+- [ ] **Step 2: Verify in browser console**
+
+Reload the page. In DevTools console:
+
+```js
+COLOR_DB.length
+// Expected: 160 or more
+
+COLOR_DB.filter(function(c){ return c.name.includes('rose'); }).map(function(c){ return c.name; })
+// Expected: ["dusty rose", "blush rose", "faded rose", "rose quartz", "rose taupe"]
+```
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add palette-finder/index.html
+git commit -m "feat: add color name database with 160+ entries"
+```
+
+---
+
+### Task 3: Feature 2 — Color Name to Hex (HTML + search algorithm + event handlers)
+
+**Files:**
+- Modify: `palette-finder/index.html`
+
+**Interfaces:**
+- Consumes: `COLOR_DB` (Task 2), `copyText(text, btn, defaultLabel)` (Task 1)
+- Produces: `buildColorCard(hex, label)` — creates a `.color-card` DOM element with swatch, HEX, RGB, and wired Copy button. Used again by Feature 1 in Task 5.
+
+- [ ] **Step 1: Add Feature 2 HTML**
+
+Inside `<div id="tab-namefinder">`, replace the comment `<!-- Feature 2 HTML added in Task 3 -->` with:
+
+```html
+      <div class="name-input-row">
+        <input
+          type="text"
+          id="name-input"
+          class="name-input"
+          placeholder="e.g. dusty rose, sage green, terracotta…"
+          aria-label="Color name"
+          autocomplete="off"
+          spellcheck="false"
+        >
+        <button id="find-btn" class="find-btn">Find</button>
+      </div>
+      <div id="popular-chips" class="popular-chips" aria-label="Popular color names">
+        <button class="chip" data-q="dusty rose">dusty rose</button>
+        <button class="chip" data-q="sage green">sage green</button>
+        <button class="chip" data-q="terracotta">terracotta</button>
+        <button class="chip" data-q="ivory">ivory</button>
+        <button class="chip" data-q="blush">blush</button>
+        <button class="chip" data-q="taupe">taupe</button>
+        <button class="chip" data-q="mustard">mustard</button>
+      </div>
+      <div id="name-results" style="margin-top:24px;"></div>
+```
+
+- [ ] **Step 2: Add Feature 2 JS**
+
+Inside the `<script>` block, replace the line `/* Feature 2 JS inserted here — Task 3 */` with:
+
+```js
+  /* ── Feature 2: Color Name to Hex ── */
+  function hexToRgb(hex) {
+    return {
+      r: parseInt(hex.slice(1, 3), 16),
+      g: parseInt(hex.slice(3, 5), 16),
+      b: parseInt(hex.slice(5, 7), 16)
+    };
+  }
+
+  function buildColorCard(hex, label) {
+    var rgb = hexToRgb(hex);
+    var card = document.createElement('div');
+    card.className = 'color-card';
+    card.innerHTML =
+      '<span class="color-swatch" style="background:' + hex + ';display:block;"></span>' +
+      '<div class="color-info">' +
+        (label ? '<div class="color-label">' + label + '</div>' : '') +
+        '<div class="color-hex">' + hex + '</div>' +
+        '<div class="color-rgb">rgb(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ')</div>' +
+        '<button class="copy-btn" data-hex="' + hex + '">Copy hex</button>' +
+      '</div>';
+    card.querySelector('.copy-btn').addEventListener('click', function () {
+      copyText(hex, this, 'Copy hex');
+    });
+    return card;
+  }
+
+  function findColorsByName(query) {
+    query = query.trim().toLowerCase();
+    if (!query) return [];
+    var results = [];
+    var seen = new Set();
+    function add(entry) {
+      if (!seen.has(entry.hex)) { seen.add(entry.hex); results.push(entry); }
+    }
+    COLOR_DB.forEach(function (e) { if (e.name === query) add(e); });
+    COLOR_DB.forEach(function (e) { if (e.name !== query && e.name.startsWith(query)) add(e); });
+    COLOR_DB.forEach(function (e) { if (!e.name.startsWith(query) && e.name.includes(query)) add(e); });
+    var qWords = query.split(/\s+/);
+    COLOR_DB.forEach(function (e) {
+      var nWords = e.name.split(/\s+/);
+      if (!e.name.includes(query) && qWords.some(function (qw) { return nWords.indexOf(qw) !== -1; })) add(e);
+    });
+    return results.slice(0, 4);
+  }
+
+  function renderNameResults(results, query) {
+    var container = document.getElementById('name-results');
+    container.innerHTML = '';
+    if (results.length === 0) {
+      container.innerHTML = '<p class="no-results">No colors found for “' + query + '”. Try “sage”, “blush”, or “rust”.</p>';
+      return;
+    }
+    var grid = document.createElement('div');
+    grid.className = 'color-grid';
+    results.forEach(function (entry) { grid.appendChild(buildColorCard(entry.hex, entry.name)); });
+    container.appendChild(grid);
+  }
+
+  var nameInput = document.getElementById('name-input');
+  var findBtn   = document.getElementById('find-btn');
+  var nameTimer = null;
+
+  function runNameSearch() {
+    var q = nameInput.value;
+    renderNameResults(findColorsByName(q), q);
+  }
+
+  nameInput.addEventListener('input', function () {
+    clearTimeout(nameTimer);
+    nameTimer = setTimeout(runNameSearch, 300);
+  });
+  nameInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { clearTimeout(nameTimer); runNameSearch(); }
+  });
+  findBtn.addEventListener('click', function () { clearTimeout(nameTimer); runNameSearch(); });
+
+  document.querySelectorAll('.chip').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      nameInput.value = chip.dataset.q;
+      runNameSearch();
+      nameInput.focus();
+    });
+  });
+```
+
+- [ ] **Step 3: Verify in browser**
+
+Switch to the "Color Name to Hex" tab. Test all of the following:
+
+| Input | Expected result |
+|---|---|
+| `dusty rose` | 1 card: swatch + `#D4A5A5` + rgb label "dusty rose" |
+| `rose` | 4 cards: dusty rose, blush rose, faded rose, rose quartz (or similar) |
+| `sage` | 3–4 cards: sage, sage green, muted sage, etc. |
+| `terracotta` | 1 card: `#C8745A` |
+| `xyz` | "No colors found for "xyz"…" message |
+| Click `dusty rose` chip | Input fills, cards appear |
+| "Copy hex" button | Button shows "Copied!" 1.8s, clipboard contains the HEX |
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add palette-finder/index.html
+git commit -m "feat: add color name to hex search UI and algorithm"
+```
+
+---
+
+### Task 4: Feature 1 — Drop zone HTML + file upload + image preview
+
+**Files:**
+- Modify: `palette-finder/index.html`
+
+**Interfaces:**
+- Consumes: `copyText` (Task 1)
+- Produces: `showState(state)` — toggles between `'drop'`, `'loading'`, `'results'`, `'error'` states. `extractAndRender(img)` — stub (replaced in Task 5). Both are available to Task 5.
+
+- [ ] **Step 1: Add Feature 1 HTML**
+
+Inside `<div id="tab-extractor">`, replace `<!-- Feature 1 HTML added in Task 4 -->` with:
+
+```html
+      <div id="drop-zone" class="drop-zone" role="button" tabindex="0" aria-label="Upload image to extract palette">
+        <span class="drop-zone__icon">🖼️</span>
+        <p class="drop-zone__text">Drop image here or click to upload</p>
+        <p class="drop-zone__hint">Supports JPEG, PNG, WebP, GIF — processed locally, never uploaded</p>
+      </div>
+      <input type="file" id="file-input" accept="image/*" style="display:none;" aria-hidden="true">
+
+      <div id="loading-state" class="loading-state hidden">
+        <div class="spinner"></div>
+        <p>Extracting colors…</p>
+      </div>
+
+      <div id="extractor-results" class="hidden">
+        <img id="img-preview" class="img-preview" alt="Uploaded image preview">
+        <div id="palette-grid" class="color-grid"></div>
+        <div class="copy-all-bar">
+          <button id="reset-btn" class="reset-btn">Upload another</button>
+          <button id="copy-all-btn" class="copy-all-btn">Copy all hex</button>
+        </div>
+      </div>
+
+      <div id="error-state" class="error-state hidden">
+        Could not read this image. Please try a different file.
+      </div>
+```
+
+- [ ] **Step 2: Add Feature 1 upload and drag/drop JS**
+
+Inside the `<script>` block, replace `/* Feature 1 JS inserted here — Tasks 4 & 5 */` with:
+
+```js
+  /* ── Feature 1: Color Palette Extractor ── */
+  var dropZone    = document.getElementById('drop-zone');
+  var fileInput   = document.getElementById('file-input');
+  var loadingEl   = document.getElementById('loading-state');
+  var resultsEl   = document.getElementById('extractor-results');
+  var errorEl     = document.getElementById('error-state');
+  var imgPreview  = document.getElementById('img-preview');
+  var paletteGrid = document.getElementById('palette-grid');
+  var copyAllBtn  = document.getElementById('copy-all-btn');
+  var resetBtn    = document.getElementById('reset-btn');
+
+  function showState(state) {
+    dropZone.classList.add('hidden');
+    loadingEl.classList.add('hidden');
+    resultsEl.classList.add('hidden');
+    errorEl.classList.add('hidden');
+    if (state === 'drop')    dropZone.classList.remove('hidden');
+    if (state === 'loading') loadingEl.classList.remove('hidden');
+    if (state === 'results') resultsEl.classList.remove('hidden');
+    if (state === 'error')   errorEl.classList.remove('hidden');
+  }
+
+  function handleFile(file) {
+    if (!file || !file.type.startsWith('image/')) { showState('error'); return; }
+    showState('loading');
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var img = new Image();
+      img.onload = function () {
+        imgPreview.src = e.target.result;
+        extractAndRender(img);
+      };
+      img.onerror = function () { showState('error'); };
+      img.src = e.target.result;
+    };
+    reader.onerror = function () { showState('error'); };
+    reader.readAsDataURL(file);
+  }
+
+  dropZone.addEventListener('click', function () { fileInput.click(); });
+  dropZone.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+  });
+  fileInput.addEventListener('change', function () {
+    if (fileInput.files[0]) handleFile(fileInput.files[0]);
+    fileInput.value = '';
+  });
+  dropZone.addEventListener('dragover', function (e) {
+    e.preventDefault(); dropZone.classList.add('drag-over');
+  });
+  dropZone.addEventListener('dragleave', function () { dropZone.classList.remove('drag-over'); });
+  dropZone.addEventListener('drop', function (e) {
+    e.preventDefault(); dropZone.classList.remove('drag-over');
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+
+  resetBtn.addEventListener('click', function () {
+    paletteGrid.innerHTML = '';
+    showState('drop');
+  });
+
+  function extractAndRender(img) {
+    /* replaced in Task 5 */
+    showState('results');
+  }
+```
+
+- [ ] **Step 3: Verify in browser**
+
+Stay on "Color Palette Extractor" tab. Test:
+- Drop zone visible with 🖼️ icon and text
+- Clicking drop zone opens the OS file picker
+- Dragging an image over the zone → teal dashed border and light-teal background
+- Dropping or selecting an image → brief "Extracting colors…" spinner → results area shows with image preview (palette grid is empty — correct, extraction not yet implemented)
+- "Upload another" → returns to drop zone, grid cleared
+- Dropping a non-image file → red error message appears
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add palette-finder/index.html
+git commit -m "feat: add image upload drop zone, drag-and-drop, and preview"
+```
+
+---
+
+### Task 5: Feature 1 — Median Cut algorithm + palette rendering + copy-all
+
+**Files:**
+- Modify: `palette-finder/index.html`
+
+**Interfaces:**
+- Consumes: `showState` (Task 4), `paletteGrid` / `copyAllBtn` DOM refs (Task 4), `buildColorCard(hex, label)` (Task 3), `copyText(text, btn, defaultLabel)` (Task 1)
+- Produces: Fully working Feature 1 — 6 extracted color cards with copy buttons and "Copy all hex"
+
+- [ ] **Step 1: Replace the extractAndRender stub**
+
+Find this exact function in the `<script>` block:
+
+```js
+  function extractAndRender(img) {
+    /* replaced in Task 5 */
+    showState('results');
+  }
+```
+
+Replace the **entire function** (all four lines above) with this complete block:
+
+```js
+  /* ── Median Cut color extraction ── */
+  function toHex(r, g, b) {
+    return '#' + [r, g, b].map(function (v) {
+      return Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0');
+    }).join('').toUpperCase();
+  }
+
+  function medianCut(pixels, depth) {
+    if (depth === 0 || pixels.length === 0) {
+      var rS = 0, gS = 0, bS = 0;
+      for (var i = 0; i < pixels.length; i++) { rS += pixels[i][0]; gS += pixels[i][1]; bS += pixels[i][2]; }
+      var n = pixels.length || 1;
+      return [{ r: rS / n, g: gS / n, b: bS / n, count: pixels.length }];
+    }
+    var rMin = 255, rMax = 0, gMin = 255, gMax = 0, bMin = 255, bMax = 0;
+    for (var j = 0; j < pixels.length; j++) {
+      var px = pixels[j];
+      if (px[0] < rMin) rMin = px[0]; if (px[0] > rMax) rMax = px[0];
+      if (px[1] < gMin) gMin = px[1]; if (px[1] > gMax) gMax = px[1];
+      if (px[2] < bMin) bMin = px[2]; if (px[2] > bMax) bMax = px[2];
+    }
+    var ch = 0;
+    if ((gMax - gMin) > (rMax - rMin) && (gMax - gMin) >= (bMax - bMin)) ch = 1;
+    else if ((bMax - bMin) > (rMax - rMin)) ch = 2;
+    pixels.sort(function (a, b) { return a[ch] - b[ch]; });
+    var mid = Math.floor(pixels.length / 2);
+    return medianCut(pixels.slice(0, mid), depth - 1)
+      .concat(medianCut(pixels.slice(mid), depth - 1));
+  }
+
+  function extractPaletteFromImg(img, numColors) {
+    numColors = numColors || 6;
+    var canvas = document.createElement('canvas');
+    var maxDim = 400;
+    var scale = Math.min(1, maxDim / Math.max(img.naturalWidth || 1, img.naturalHeight || 1));
+    canvas.width  = Math.max(1, Math.round(img.naturalWidth  * scale));
+    canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    var data;
+    try { data = ctx.getImageData(0, 0, canvas.width, canvas.height).data; }
+    catch (e) { return null; }
+
+    var pixels = [];
+    var total = Math.floor(data.length / 4);
+    var step  = Math.max(1, Math.floor(total / 1000));
+    for (var i = 0; i < total; i += step) {
+      var idx = i * 4;
+      if (data[idx + 3] < 128) continue;
+      pixels.push([data[idx], data[idx + 1], data[idx + 2]]);
+    }
+    if (pixels.length < numColors) return null;
+
+    var buckets = medianCut(pixels, 3);
+    buckets.sort(function (a, b) { return b.count - a.count; });
+    return buckets.slice(0, numColors).map(function (b) {
+      return { r: Math.round(b.r), g: Math.round(b.g), b: Math.round(b.b) };
+    });
+  }
+
+  function extractAndRender(img) {
+    var palette = extractPaletteFromImg(img, 6);
+    if (!palette) { showState('error'); return; }
+
+    paletteGrid.innerHTML = '';
+    palette.forEach(function (color) {
+      paletteGrid.appendChild(buildColorCard(toHex(color.r, color.g, color.b), null));
+    });
+
+    copyAllBtn.textContent = 'Copy all hex';
+    copyAllBtn.classList.remove('copied');
+    copyAllBtn.onclick = function () {
+      var all = palette.map(function (c) { return toHex(c.r, c.g, c.b); }).join(', ');
+      copyText(all, copyAllBtn, 'Copy all hex');
+    };
+
+    showState('results');
+  }
+```
+
+- [ ] **Step 2: Verify in browser — basic extraction**
+
+Upload a colorful JPEG photo (e.g. a landscape or product photo):
+- 6 color cards appear, each with a correct color swatch
+- HEX codes are valid 6-digit hex values (e.g. `#A3B1C2`)
+- RGB values match the HEX (e.g. `#A3B1C2` → `rgb(163, 177, 194)`)
+
+- [ ] **Step 3: Verify copy functionality**
+
+- Click "Copy hex" on any card → shows "Copied!" 1.8s → clipboard has e.g. `#A3B1C2`
+- Click "Copy all hex" → clipboard has 6 comma-separated hex values e.g. `#A3B1C2, #D4C5B0, #8A6F5C, #F2EDE4, #5C7A6A, #3A3028`
+- "Copy all hex" shows "Copied!" and reverts after 1.8s
+
+- [ ] **Step 4: Verify edge cases**
+
+- Upload a PNG with transparency → only non-transparent pixels contribute to palette
+- Upload a near-single-color image (e.g. solid red JPG) → palette shows 6 shades of that color
+- Upload a very small image (e.g. 1×1 pixel) → error state appears
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add palette-finder/index.html
+git commit -m "feat: add median cut color extraction and palette rendering"
+```
+
+---
+
+### Task 6: Homepage card + sitemap
+
+**Files:**
+- Modify: `index.html` (root)
+- Modify: `sitemap.xml`
+
+**Interfaces:**
+- Produces: New tool card on homepage, `/palette-finder/` entry in sitemap.
+
+- [ ] **Step 1: Add tool card to homepage**
+
+Open root `index.html`. Find the Age Calculator card (the last `<article>` inside `.tools-grid`):
+
+```html
+        <!-- Age Calculator -->
+        <article class="tool-card">
+```
+
+Insert a new article **after** the closing `</article>` of the Age Calculator card and **before** the closing `</div>` of `.tools-grid`:
+
+```html
+
+        <!-- Palette & Color Finder -->
+        <article class="tool-card">
+          <div class="card-icon">🎨</div>
+          <div class="card-name">
+            <a href="/palette-finder/">Palette &amp; Color Finder</a>
+          </div>
+          <p class="card-desc">Extract dominant colors from any image, or find the hex code for any color name like "dusty rose" or "sage green".</p>
+          <a class="card-cta" href="/palette-finder/" tabindex="-1" aria-hidden="true">Use tool &rarr;</a>
+        </article>
+```
+
+- [ ] **Step 2: Add entry to sitemap.xml**
+
+Open `sitemap.xml`. Find the age-calculator `</url>` closing tag. Insert immediately after it:
+
+```xml
+  <url>
+    <loc>https://softeditools.com/palette-finder/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+```
+
+- [ ] **Step 3: Verify in browser**
+
+Open `http://localhost:8000/`:
+- "Palette & Color Finder" card visible in the tools grid with 🎨 icon
+- Card description reads correctly
+- Clicking the card (or its "Use tool →" link) navigates to `/palette-finder/`
+- The tool page loads and both tabs function as expected
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add index.html sitemap.xml
+git commit -m "feat: add palette-finder card to homepage and sitemap entry"
+```
+
+---
+
+## Plan Self-Review
+
+### Spec coverage
+
+| Spec requirement | Task |
+|---|---|
+| `/palette-finder/` URL, `palette-finder/index.html` file | Task 1 |
+| Same nav + layout pattern as existing tools | Task 1 (nav.js, CSS tokens, AdSense) |
+| Drag-and-drop upload | Task 4 |
+| Click-to-upload | Task 4 |
+| Canvas API pixel extraction | Task 5 |
+| Median Cut algorithm → 5–6 dominant colors | Task 5 (extracts exactly 6) |
+| Color card: swatch + HEX + RGB + Copy hex | Task 3 (`buildColorCard`), reused in Task 5 |
+| "Copy all hex" button | Task 5 |
+| Image preview | Task 4 |
+| Loading state during processing | Task 4 (`showState('loading')`) |
+| Empty state (drop zone before upload) | Task 4 (initial state) |
+| Error state | Task 4 (`showState('error')`) |
+| Color name database ~180 entries | Task 2 |
+| 4-priority fuzzy search | Task 3 (`findColorsByName`) |
+| Debounced real-time search (300ms) | Task 3 |
+| Popular chips (click-to-search) | Task 3 |
+| No-results message | Task 3 (`renderNameResults`) |
+| Tab UI (default: Extractor) | Task 1 |
+| SEO title + meta description + schema.org | Task 1 |
+| Responsive: 3-col desktop / 2-col ≤640px | Task 1 CSS |
+| Mobile: tab buttons, stacked input on ≤480px | Task 1 CSS |
+| Homepage tool card | Task 6 |
+| Sitemap entry | Task 6 |
+
+### Placeholder scan
+
+No TBDs, TODOs, or "implement later" comments in any task. All code blocks are complete and self-contained. ✓
+
+### Type / name consistency
+
+| Symbol | Defined | Used |
+|---|---|---|
+| `copyText(text, btn, defaultLabel)` | Task 1 | Tasks 3, 5 |
+| `buildColorCard(hex, label)` | Task 3 | Task 5 |
+| `hexToRgb(hex)` | Task 3 | Task 3 (inside `buildColorCard`) |
+| `COLOR_DB` | Task 2 | Task 3 |
+| `showState(state)` | Task 4 | Task 5 |
+| `paletteGrid`, `copyAllBtn`, `imgPreview` | Task 4 | Task 5 |
+| `toHex(r, g, b)` | Task 5 | Task 5 |
+| `medianCut(pixels, depth)` | Task 5 | Task 5 |
+| `extractPaletteFromImg(img, numColors)` | Task 5 | Task 5 |
+| `extractAndRender(img)` | Task 4 (stub), Task 5 (replaced) | Task 4 (`handleFile`) |
+
+All references are consistent. ✓
