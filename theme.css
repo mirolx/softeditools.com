@@ -1,0 +1,114 @@
+/* ==========================================================================
+   softeditools.com — Sage Editorial Theme
+   Loaded AFTER each page's inline <style> so equal-specificity rules here
+   win the cascade. Recoloring flows through the CSS variables shared by
+   every page; the rest is editorial typography, soft cards, and motion.
+   ========================================================================== */
+
+:root {
+  --accent:       #7C8B6F;
+  --accent-dark:  #5B6B4E;
+  --accent-light: #EDF0E5;
+  --forest:       #3F4A38;
+  --text:         #33382E;
+  --muted:        #7A7E6F;
+  /* --bg stays warm white: inputs and cards read var(--bg) for their own
+     background. The cream page canvas is set on body below. */
+  --bg:           #FDFCF7;
+  --card-bg:      #FDFCF7;
+  --surface:      #F2EFE4;
+  --border:       #E5E1D3;
+  --radius:       14px;
+  --serif:        'Cormorant Garamond', Georgia, Cambria, serif;
+  --font-display: 'Cormorant Garamond', Georgia, Cambria, serif;
+}
+
+body {
+  background: #F7F4EA;
+  color: var(--text);
+}
+
+/* ── Editorial typography ── */
+h1, h2, .site-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.005em;
+}
+
+h1 { font-size: 2.9rem; line-height: 1.12; }
+h2 { font-size: 1.75rem; }
+
+.site-name { font-size: 3.1rem; font-weight: 500; }
+
+.stat-value, .result-value {
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  h1 { font-size: 2.15rem; }
+  .site-name { font-size: 2.3rem; }
+}
+
+/* ── Soft cards + hover lift ── */
+.tool-card, .blog-card, .stat-card, .result-box {
+  background: var(--card-bg);
+  border-color: var(--border);
+  border-radius: 18px;
+}
+
+.tool-card, .blog-card {
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tool-card:hover, .blog-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(63, 74, 56, 0.10);
+  }
+}
+
+/* ── Button press ── */
+button { transition: transform 0.15s ease, background 0.15s, border-color 0.15s, color 0.15s; }
+
+@media (prefers-reduced-motion: no-preference) {
+  button:active { transform: scale(0.98); }
+}
+
+/* ── Recolor hardcoded greens to the sage family ── */
+.badge-new { background: var(--accent-dark); }
+
+#copy-btn.copied,
+.copy-btn.copied,
+.copy-all-btn.copied,
+.bulk-copy-btn.copied,
+.icon-btn.copied {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #F7F4EA;
+}
+
+/* ── Footer ── */
+footer {
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+}
+
+footer a, .footer-blog-link { color: var(--accent-dark); }
+footer a:hover, .footer-blog-link:hover { color: var(--forest); }
+
+/* ── Fade-in on scroll ──
+   theme.js adds .js-fade to <html> and .fade-in to candidate elements,
+   then .is-visible on first intersection. Without JS nothing is hidden. */
+@media (prefers-reduced-motion: no-preference) {
+  html.js-fade .fade-in {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+
+  html.js-fade .fade-in.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
