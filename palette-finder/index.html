@@ -673,8 +673,82 @@
     showState('drop');
   });
 
+  /* ── Median Cut color extraction ── */
+  function toHex(r, g, b) {
+    return '#' + [r, g, b].map(function (v) {
+      return Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0');
+    }).join('').toUpperCase();
+  }
+
+  function medianCut(pixels, depth) {
+    if (depth === 0 || pixels.length === 0) {
+      var rS = 0, gS = 0, bS = 0;
+      for (var i = 0; i < pixels.length; i++) { rS += pixels[i][0]; gS += pixels[i][1]; bS += pixels[i][2]; }
+      var n = pixels.length || 1;
+      return [{ r: rS / n, g: gS / n, b: bS / n, count: pixels.length }];
+    }
+    var rMin = 255, rMax = 0, gMin = 255, gMax = 0, bMin = 255, bMax = 0;
+    for (var j = 0; j < pixels.length; j++) {
+      var px = pixels[j];
+      if (px[0] < rMin) rMin = px[0]; if (px[0] > rMax) rMax = px[0];
+      if (px[1] < gMin) gMin = px[1]; if (px[1] > gMax) gMax = px[1];
+      if (px[2] < bMin) bMin = px[2]; if (px[2] > bMax) bMax = px[2];
+    }
+    var ch = 0;
+    if ((gMax - gMin) > (rMax - rMin) && (gMax - gMin) >= (bMax - bMin)) ch = 1;
+    else if ((bMax - bMin) > (rMax - rMin)) ch = 2;
+    pixels.sort(function (a, b) { return a[ch] - b[ch]; });
+    var mid = Math.floor(pixels.length / 2);
+    return medianCut(pixels.slice(0, mid), depth - 1)
+      .concat(medianCut(pixels.slice(mid), depth - 1));
+  }
+
+  function extractPaletteFromImg(img, numColors) {
+    numColors = numColors || 6;
+    var canvas = document.createElement('canvas');
+    var maxDim = 400;
+    var scale = Math.min(1, maxDim / Math.max(img.naturalWidth || 1, img.naturalHeight || 1));
+    canvas.width  = Math.max(1, Math.round(img.naturalWidth  * scale));
+    canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    var data;
+    try { data = ctx.getImageData(0, 0, canvas.width, canvas.height).data; }
+    catch (e) { return null; }
+
+    var pixels = [];
+    var total = Math.floor(data.length / 4);
+    var step  = Math.max(1, Math.floor(total / 1000));
+    for (var i = 0; i < total; i += step) {
+      var idx = i * 4;
+      if (data[idx + 3] < 128) continue;
+      pixels.push([data[idx], data[idx + 1], data[idx + 2]]);
+    }
+    if (pixels.length < numColors) return null;
+
+    var buckets = medianCut(pixels, 3);
+    buckets.sort(function (a, b) { return b.count - a.count; });
+    return buckets.slice(0, numColors).map(function (b) {
+      return { r: Math.round(b.r), g: Math.round(b.g), b: Math.round(b.b) };
+    });
+  }
+
   function extractAndRender(img) {
-    /* replaced in Task 5 */
+    var palette = extractPaletteFromImg(img, 6);
+    if (!palette) { showState('error'); return; }
+
+    paletteGrid.innerHTML = '';
+    palette.forEach(function (color) {
+      paletteGrid.appendChild(buildColorCard(toHex(color.r, color.g, color.b), null));
+    });
+
+    copyAllBtn.textContent = 'Copy all hex';
+    copyAllBtn.classList.remove('copied');
+    copyAllBtn.onclick = function () {
+      var all = palette.map(function (c) { return toHex(c.r, c.g, c.b); }).join(', ');
+      copyText(all, copyAllBtn, 'Copy all hex');
+    };
+
     showState('results');
   }
 </script>
