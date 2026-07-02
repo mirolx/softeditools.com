@@ -98,7 +98,7 @@ footer a, .footer-blog-link { color: var(--accent-dark); }
 footer a:hover, .footer-blog-link:hover { color: var(--forest); }
 
 /* content links: darker sage for AA contrast on cream */
-main a:not([class]) { color: var(--accent-dark); }
+.article-body a:not([class]), .page-body a:not([class]) { color: var(--accent-dark); }
 
 /* ── Fade-in on scroll ──
    theme.js adds .js-fade to <html> and .fade-in to candidate elements,
