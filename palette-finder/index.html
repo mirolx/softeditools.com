@@ -319,7 +319,7 @@
 
       <div class="faq-item">
         <h3>What color names does the lookup support?</h3>
-        <p>The database includes around 180 entries — from standard web colors to editorial names used in Etsy shops, print-on-demand design, and interior decor: dusty rose, sage green, terracotta, taupe, champagne, celadon, and many more.</p>
+        <p>The database includes over 150 entries — from standard web colors to editorial names used in Etsy shops, print-on-demand design, and interior decor: dusty rose, sage green, terracotta, taupe, champagne, celadon, and many more.</p>
       </div>
 
       <div class="faq-item">
@@ -525,6 +525,12 @@
     { name: 'digital lavender', hex: '#C8B8E8' },
     { name: 'serenity blue',    hex: '#92A8D1' },
     { name: 'rose quartz',      hex: '#F7B4BC' },
+    { name: 'blush mauve',      hex: '#C9A0B0' },
+    { name: 'warm taupe',       hex: '#B5A090' },
+    { name: 'muted olive',      hex: '#8B9A6A' },
+    { name: 'steel blue',       hex: '#6A8EAE' },
+    { name: 'dusty orange',     hex: '#CC8060' },
+    { name: 'pale moss',        hex: '#B8C8A0' },
   ];
 
   /* ── Feature 2: Color Name to Hex ── */
@@ -577,7 +583,10 @@
     var container = document.getElementById('name-results');
     container.innerHTML = '';
     if (results.length === 0) {
-      container.innerHTML = '<p class="no-results">No colors found for "' + query + '". Try "sage", "blush", or "rust".</p>';
+      var msg = document.createElement('p');
+      msg.className = 'no-results';
+      msg.textContent = 'No colors found for "' + query + '". Try "sage", "blush", or "rust".';
+      container.appendChild(msg);
       return;
     }
     var grid = document.createElement('div');
