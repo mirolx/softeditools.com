@@ -238,7 +238,30 @@
     </div>
 
     <div id="tab-extractor" class="tab-panel" role="tabpanel">
-      <!-- Feature 1 HTML added in Task 4 -->
+      <div id="drop-zone" class="drop-zone" role="button" tabindex="0" aria-label="Upload image to extract palette">
+        <span class="drop-zone__icon">🖼️</span>
+        <p class="drop-zone__text">Drop image here or click to upload</p>
+        <p class="drop-zone__hint">Supports JPEG, PNG, WebP, GIF — processed locally, never uploaded</p>
+      </div>
+      <input type="file" id="file-input" accept="image/*" style="display:none;" aria-hidden="true">
+
+      <div id="loading-state" class="loading-state hidden">
+        <div class="spinner"></div>
+        <p>Extracting colors…</p>
+      </div>
+
+      <div id="extractor-results" class="hidden">
+        <img id="img-preview" class="img-preview" alt="Uploaded image preview">
+        <div id="palette-grid" class="color-grid"></div>
+        <div class="copy-all-bar">
+          <button id="reset-btn" class="reset-btn">Upload another</button>
+          <button id="copy-all-btn" class="copy-all-btn">Copy all hex</button>
+        </div>
+      </div>
+
+      <div id="error-state" class="error-state hidden">
+        Could not read this image. Please try a different file.
+      </div>
     </div>
 
     <div id="tab-namefinder" class="tab-panel hidden" role="tabpanel">
@@ -589,7 +612,71 @@
     });
   });
 
-  /* Feature 1 JS inserted here — Tasks 4 & 5 */
+  /* ── Feature 1: Color Palette Extractor ── */
+  var dropZone    = document.getElementById('drop-zone');
+  var fileInput   = document.getElementById('file-input');
+  var loadingEl   = document.getElementById('loading-state');
+  var resultsEl   = document.getElementById('extractor-results');
+  var errorEl     = document.getElementById('error-state');
+  var imgPreview  = document.getElementById('img-preview');
+  var paletteGrid = document.getElementById('palette-grid');
+  var copyAllBtn  = document.getElementById('copy-all-btn');
+  var resetBtn    = document.getElementById('reset-btn');
+
+  function showState(state) {
+    dropZone.classList.add('hidden');
+    loadingEl.classList.add('hidden');
+    resultsEl.classList.add('hidden');
+    errorEl.classList.add('hidden');
+    if (state === 'drop')    dropZone.classList.remove('hidden');
+    if (state === 'loading') loadingEl.classList.remove('hidden');
+    if (state === 'results') resultsEl.classList.remove('hidden');
+    if (state === 'error')   errorEl.classList.remove('hidden');
+  }
+
+  function handleFile(file) {
+    if (!file || !file.type.startsWith('image/')) { showState('error'); return; }
+    showState('loading');
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var img = new Image();
+      img.onload = function () {
+        imgPreview.src = e.target.result;
+        extractAndRender(img);
+      };
+      img.onerror = function () { showState('error'); };
+      img.src = e.target.result;
+    };
+    reader.onerror = function () { showState('error'); };
+    reader.readAsDataURL(file);
+  }
+
+  dropZone.addEventListener('click', function () { fileInput.click(); });
+  dropZone.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+  });
+  fileInput.addEventListener('change', function () {
+    if (fileInput.files[0]) handleFile(fileInput.files[0]);
+    fileInput.value = '';
+  });
+  dropZone.addEventListener('dragover', function (e) {
+    e.preventDefault(); dropZone.classList.add('drag-over');
+  });
+  dropZone.addEventListener('dragleave', function () { dropZone.classList.remove('drag-over'); });
+  dropZone.addEventListener('drop', function (e) {
+    e.preventDefault(); dropZone.classList.remove('drag-over');
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+
+  resetBtn.addEventListener('click', function () {
+    paletteGrid.innerHTML = '';
+    showState('drop');
+  });
+
+  function extractAndRender(img) {
+    /* replaced in Task 5 */
+    showState('results');
+  }
 </script>
 
 </body>
