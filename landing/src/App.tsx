@@ -58,10 +58,10 @@ export default function App() {
       background={<div className="absolute inset-0 bg-cream" style={{ transform: "scale(var(--gp-field-scale,1))" }} />}
       front={
         <p
-          className="absolute left-[8%] right-[8%] m-0 font-sans text-[clamp(1.25rem,3.4vw,2.6rem)] font-normal italic leading-tight tracking-tight text-white"
+          className="absolute left-[8%] right-[8%] m-0 font-sans text-[clamp(1.1rem,2.6vw,2rem)] font-normal italic leading-tight tracking-[0.04em] text-white"
           style={{ bottom: "calc(100% - var(--gp-word-top, 35%) + 28px)" }}
         >
-          Simple tools, Softly made
+          simple tools, softly made
         </p>
       }
     >
