@@ -88,6 +88,9 @@ export default function App() {
             </li>
           ))}
         </ul>
+        <p className="m-0 mt-12 text-sm text-[#686d5d]">
+          &copy; 2026 SoftEdit Tools &middot; <a className="hover:text-[#5b6b4e]" href="/about/">About</a> &middot; <a className="hover:text-[#5b6b4e]" href="/blog/">Blog</a> &middot; <a className="hover:text-[#5b6b4e]" href="/privacy-policy/">Privacy Policy</a>
+        </p>
       </div>
     </GlyphPortal>
   );
