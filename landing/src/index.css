@@ -6,6 +6,10 @@
   --color-sage: #98998a;
   --color-cream: #f7f4ea;
   --color-forest: #3f4a38;
+  --color-card: #fdfcf7;
+  --color-card-foreground: #33382e;
+  --color-muted-foreground: #686d5d;
+  --color-border: #e5e1d3;
 }
 
 body {
