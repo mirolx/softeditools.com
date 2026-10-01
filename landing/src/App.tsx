@@ -30,7 +30,9 @@ export default function App() {
 
   useEffect(() => {
     let settled = false;
-    const finish = (v: string) => { if (!settled) { settled = true; setFace(v); } };
+    // Mount only once the browser is painting frames. The portal switches its scroll motion off for good
+    // if its first frame arrives late, which happens when the page loads in a hidden or throttled tab.
+    const finish = (v: string) => { if (!settled) { settled = true; requestAnimationFrame(() => setFace(v)); } };
     // The portal freezes the face at mount, so wait for it (or fall back after 1.6s).
     fontLoad ??= new FontFace("SoftEdit Display", `url(${playfairUrl})`, { weight: "400" })
       .load().then((f) => { document.fonts.add(f); });
