@@ -23,6 +23,8 @@ const tools = [
   { href: "/age-calculator/", name: "Age Calculator", desc: "Exact age in years, months and days.", icon: CalendarDays },
 ];
 
+const SCROLL_LENGTH = 2.2;
+
 let fontLoad: Promise<void> | undefined;
 
 export default function App() {
@@ -41,6 +43,32 @@ export default function App() {
     return () => { settled = true; clearTimeout(timeout); };
   }, []);
 
+  // The portal's "enter" link jumps to the content and focuses it, which pins the content open
+  // (:focus-within) so scrolling back up shows a blank field. Scroll there instead and drop focus.
+  useEffect(() => {
+    if (!face) return;
+    const section = document.querySelector("section");
+    const pin = section?.querySelector<HTMLElement>("[data-gp-pin]");
+    const content = section?.querySelector<HTMLElement>("[data-gp-content]");
+    const enter = section?.querySelector<HTMLAnchorElement>("[data-gp-enter]");
+    if (!section || !pin || !content || !enter) return;
+    const onEnter = (e: MouseEvent) => {
+      if (section.dataset.gpMotion !== "on") return; // reading flow: native jump is fine
+      e.preventDefault();
+      const top = section.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: top + pin.clientHeight * SCROLL_LENGTH, behavior: "smooth" });
+    };
+    const onScroll = () => {
+      if (Number(section.dataset.gpProgress) < 0.5 && content.contains(document.activeElement)) (document.activeElement as HTMLElement).blur();
+    };
+    enter.addEventListener("click", onEnter);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      enter.removeEventListener("click", onEnter);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, [face]);
+
   if (!face) return <div className="min-h-svh bg-sage" role="status" aria-label="Loading" />;
 
   return (
@@ -49,7 +77,7 @@ export default function App() {
       focusChar="o"
       fontFamily={face}
       fontWeight={400}
-      scrollLength={2.2}
+      scrollLength={SCROLL_LENGTH}
       enterLabel="Browse the tools"
       style={{
         "--gp-paper": "#98998a",
@@ -68,10 +96,7 @@ export default function App() {
       }
     >
       <div className="mx-auto w-full max-w-5xl">
-        <h2 className="m-0 mb-3 font-serif text-4xl leading-tight text-forest sm:text-5xl">Everyday tools, kept simple.</h2>
-        <p className="m-0 mb-10 max-w-[48ch] text-base leading-relaxed text-[#686d5d]">
-          Free, fast and quiet. No sign-up, no clutter — just the tool you came for.
-        </p>
+        <h2 className="m-0 mb-10 font-serif text-4xl leading-tight text-forest sm:text-5xl">Everyday tools, kept simple.</h2>
         <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
           {tools.map(({ href, name, desc, icon: Icon }) => (
             <li key={href}>
