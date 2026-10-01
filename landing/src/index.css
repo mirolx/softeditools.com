@@ -1,0 +1,17 @@
+@import "tailwindcss";
+@import "@fontsource/lato/400-italic.css";
+@import "@fontsource/lato/400.css";
+
+@theme {
+  --font-sans: "Lato", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --color-sage: #98998a;
+  --color-cream: #f7f4ea;
+  --color-forest: #3f4a38;
+}
+
+body {
+  margin: 0;
+  background: var(--color-sage);
+  font-family: var(--font-sans);
+}
